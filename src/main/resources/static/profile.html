@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Profile</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="navbar">
+    <span>SCOPE CINEMAS</span>
+</div>
+<div class="profile-container">
+    <h2>Welcome, <span id="firstName"></span>!</h2>
+    <p>Email: <span id="email"></span></p>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        document.getElementById('firstName').textContent = params.get('firstName');
+        document.getElementById('email').textContent = params.get('email');
+    </script>
+</div>
+</body>
+</html>

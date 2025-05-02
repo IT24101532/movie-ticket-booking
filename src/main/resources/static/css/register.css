@@ -1,0 +1,138 @@
+body {
+    background: #000000;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+}
+.navbar {
+    background: #0c0c22;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    height: 60px;
+    border-bottom: 2px solid #222;
+}
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+.logo .scope {
+    letter-spacing: 4px;
+}
+.navbar nav {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+.navbar a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 15px;
+    transition: color 0.2s;
+}
+.navbar a.buy-tickets {
+    background: #5d5dfc;
+    color: #fff;
+    padding: 6px 16px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+.navbar a:hover {
+    color: #fafafa;
+}
+.register-title {
+    margin: 40px 0 0 0;
+    text-align: left;
+    padding-left: 12vw;
+}
+.register-title h1 {
+    font-size: 2.1rem;
+    letter-spacing: 3px;
+    color: #fafafa;
+    margin-bottom: 5px;
+}
+.breadcrumb {
+    font-size: 1rem;
+    color: #fafafa;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+}
+.registration-form-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin-top: 10px;
+}
+.registration-form {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 18px #0001;
+    padding: 40px 30px 30px 30px;
+    width: 370px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.registration-form label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    margin-bottom: 0;
+}
+.registration-form input[type="text"],
+.registration-form input[type="email"],
+.registration-form input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0 0 0;
+    border: 1px solid #e3e3e3;
+    border-radius: 3px;
+    background: #f5f5f5;
+    font-size: 15px;
+}
+.gender-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+.mobile-prefix {
+    font-weight: bold;
+    margin-right: 4px;
+    font-size: 15px;
+}
+.required {
+    color: #e64a6f;
+    font-size: 18px;
+    margin-left: 4px;
+}
+.register-btn {
+    background: #5d5dfc;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    padding: 13px;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.register-btn:hover {
+    background: ##000000;
+}
+@media (max-width: 600px) {
+    .navbar, .register-title {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .registration-form {
+        width: 98vw;
+        min-width: 0;
+        padding: 20px 5vw;
+    }
+}
