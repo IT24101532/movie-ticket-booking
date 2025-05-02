@@ -1,0 +1,88 @@
+body {
+    background: #000000;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+}
+.navbar {
+    background: #0c0c22;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    height: 60px;
+    border-bottom: 2px solid #222;
+}
+.navbar a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 15px;
+    margin-left: 20px;
+    transition: color 0.2s;
+}
+.navbar a:hover {
+    color: #ffd700;
+}
+.profile-header {
+    margin: 40px 0 0 0;
+    text-align: left;
+    padding-left: 12vw;
+}
+.profile-header h1 {
+    font-size: 2.1rem;
+    letter-spacing: 3px;
+    color: #222;
+    margin-bottom: 5px;
+}
+.profile-container {
+    max-width: 420px;
+    background: #fff;
+    margin: 60px auto 0 auto;
+    border-radius: 8px;
+    box-shadow: 0 0 18px #0001;
+    padding: 40px 30px 30px 30px;
+    text-align: center;
+}
+.profile-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #4b4be4;
+    margin-bottom: 18px;
+}
+.profile-name {
+    font-size: 1.4rem;
+    color: #10102a;
+    font-weight: bold;
+    margin-bottom: 6px;
+    letter-spacing: 1.5px;
+}
+.profile-email {
+    color: #4b4be4;
+    font-size: 1rem;
+    margin-bottom: 18px;
+}
+.profile-details {
+    text-align: left;
+    margin-top: 20px;
+}
+.profile-details label {
+    font-weight: bold;
+    color: #10102a;
+}
+.profile-details span {
+    color: #333;
+    margin-left: 8px;
+}
+@media (max-width: 600px) {
+    .navbar, .profile-header {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .profile-container {
+        width: 98vw;
+        min-width: 0;
+        padding: 20px 5vw;
+    }
+}

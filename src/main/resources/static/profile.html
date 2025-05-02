@@ -2,21 +2,54 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Your Profile</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <title>User Profile - Movie Vault</title>
+    <link rel="stylesheet" href="/css/profile.css">
 </head>
 <body>
 <div class="navbar">
-    <span>SCOPE CINEMAS</span>
+    <span><b>MOVIE VAULT</b></span>
+    <span>
+        <a href="/home.html">HOME</a>
+        <a href="/login.html">LOGIN</a>
+        <a href="/register.html">REGISTER</a>
+
+    </span>
 </div>
+
+<div class="profile-header">
+    <h1>MY PROFILE</h1>
+</div>
+
 <div class="profile-container">
-    <h2>Welcome, <span id="firstName"></span>!</h2>
-    <p>Email: <span id="email"></span></p>
-    <script>
-        const params = new URLSearchParams(window.location.search);
-        document.getElementById('firstName').textContent = params.get('firstName');
-        document.getElementById('email').textContent = params.get('email');
-    </script>
+    <img src="/img/avatar.png" alt="Avatar" class="profile-avatar" id="profileAvatar">
+    <div class="profile-name" id="profileName"></div>
+    <div class="profile-email" id="profileEmail"></div>
+    <div class="profile-details">
+        <div><label>Mobile:</label> <span id="profileMobile"></span></div>
+        <div><label>Gender:</label> <span id="profileGender"></span></div>
+        <div><label>NIC:</label> <span id="profileNic"></span></div>
+        <div><label>Address:</label> <span id="profileAddress"></span></div>
+    </div>
+    <button class="edit-profile-btn">Edit Profile</button>
+</div>
+
+<div class="booking-history-container">
+    <h2>Booking History</h2>
+    <table class="booking-history-table">
+        <thead>
+        <tr>
+            <th>Movie</th>
+            <th>Date & Time</th>
+            <th>Theater</th>
+            <th>Seats</th>
+            <th>Status</th>
+            <th>Ticket</th>
+        </tr>
+        </thead>
+        <tbody id="bookingHistory">
+        <!-- Booking rows will be inserted here dynamically -->
+        </tbody>
+    </table>
 </div>
 </body>
 </html>
