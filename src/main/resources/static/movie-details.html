@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Details - Movie Vault</title>
+    <link rel="stylesheet" href="/css/movies.css">
+    <style>
+        .movie-details-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 0 18px #0001;
+            padding: 32px;
+            display: flex;
+            gap: 32px;
+            align-items: flex-start;
+        }
+        .movie-details-poster {
+            width: 300px;
+            height: 450px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+        .movie-details-info {
+            flex: 1;
+        }
+        .movie-details-info h2 {
+            margin-top: 0;
+            color: #222;
+        }
+        .movie-meta {
+            color: #555;
+            margin-bottom: 16px;
+        }
+        .movie-description {
+            margin-top: 15px;
+            color: #333;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <span>MOVIE VAULT</span>
+    <span>
+        <a href="/login.html">LOGIN</a>
+        <a href="/register.html">REGISTER</a>
+        <a href="/"><img src="/img/home.png" alt="Home" class="home-icon"></a>
+    </span>
+</div>
+<div class="page-title">MOVIE DETAILS</div>
+<div class="breadcrumb">HOME / MOVIE DETAILS</div>
+<div class="movie-details-container">
+    <img src="" alt="Movie Poster" class="movie-details-poster" id="detailsPoster">
+    <div class="movie-details-info">
+        <h2 id="detailsTitle"></h2>
+        <div class="movie-meta">
+            <span id="detailsGenre"></span> |
+            <span id="detailsLanguage"></span> |
+            <span id="detailsReleaseDate"></span>
+        </div>
+        <div class="movie-description" id="detailsDescription"></div>
+    </div>
+</div>
+<!-- Add JS to fetch and display details dynamically -->
+</body>
+</html>
