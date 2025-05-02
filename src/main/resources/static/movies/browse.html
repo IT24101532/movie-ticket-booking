@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Movies</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/movies.css">
+</head>
+<body>
+<header>
+    <nav>
+        <div class="logo">Movie Ticket Booking</div>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/movies" class="active">Movies</a></li>
+            <li><a href="/profile.html">Profile</a></li>
+            <li><a href="/login.html">Login</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <div class="container">
+        <h1>Browse Movies</h1>
+
+        <div class="filter-section">
+            <!-- Search -->
+            <form action="/movies/search" method="GET">
+                <input type="text" name="keyword" placeholder="Search movies..." id="searchInput">
+                <button type="submit">Search</button>
+            </form>
+
+            <!-- Genre Filter -->
+            <div class="genre-filter">
+                <span>Filter by Genre:</span>
+                <a href="/movies">All</a>
+                <a href="/movies/genre/Action">Action</a>
+                <a href="/movies/genre/Comedy">Comedy</a>
+                <a href="/movies/genre/Drama">Drama</a>
+                <a href="/movies/genre/Horror">Horror</a>
+                <a href="/movies/genre/Sci-Fi">Sci-Fi</a>
+            </div>
+        </div>
+
+        <div class="movie-grid" id="movieContainer">
+            <!-- Dynamic content will be inserted here by the server or JavaScript -->
+            <!-- Example movie card -->
+            <div class="movie-card">
+                <img src="https://via.placeholder.com/200x300" alt="Movie Poster">
+                <div class="movie-info">
+                    <h3>Movie Title</h3>
+                    <p class="genre">Genre: Action</p>
+                    <p class="release-date">Release: 2024-04-15</p>
+                    <a href="/movies/1" class="details-btn">View Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2025 Movie Ticket Booking System</p>
+</footer>
+</body>
+</html>

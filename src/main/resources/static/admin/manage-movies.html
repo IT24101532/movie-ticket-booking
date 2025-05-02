@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Management</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/movies.css">
+
+</head>
+<body>
+<header>
+    <nav>
+        <div class="logo">Movie Ticket Booking - Admin</div>
+        <ul>
+            <li><a href="/admin/movies" class="active">Manage Movies</a></li>
+            <li><a href="/admin/bookings">Manage Bookings</a></li>
+            <li><a href="/admin/users">Manage Users</a></li>
+            <li><a href="/logout">Logout</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <div class="container admin-container">
+        <h1>Movie Management</h1>
+
+        <div class="admin-actions">
+            <a href="/admin/movies/add" class="add-btn">Add New Movie</a>
+        </div>
+
+        <div class="movie-list">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Genre</th>
+                    <th>Release Date</th>
+                    <th>Duration</th>
+                    <th>Director</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Example row, will be replaced with dynamic content -->
+                <tr>
+                    <td>1</td>
+                    <td>The Matrix</td>
+                    <td>Sci-Fi</td>
+                    <td>1999-03-31</td>
+                    <td>136</td>
+                    <td>Wachowski Brothers</td>
+                    <td>$10.99</td>
+                    <td class="actions">
+                        <a href="/admin/movies/edit/1" class="edit-btn">Edit</a>
+                        <form action="/admin/movies/delete/1" method="POST" style="display: inline;">
+                            <button type="submit" class="delete-btn">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2025 Movie Ticket Booking System</p>
+</footer>
+</body>
+</html>
