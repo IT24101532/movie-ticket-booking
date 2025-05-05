@@ -1,0 +1,260 @@
+body {
+    background: #0c0c22;
+    color: #fff;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+.trans {
+    overflow: hidden;
+    border-right: 2px solid #fff;
+    white-space: nowrap;
+    width: 0;
+    animation: typing 4s steps(40, end) forwards, blink 0.75s step-end infinite;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 1.2rem;
+    color: #ddd;
+    margin-bottom: 30px;
+}
+
+.trans .type-text {
+    display: inline-block;
+    animation: fontchange 1s ease-in-out 4s forwards;
+}
+
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+@keyframes blink {
+    50% { border-color: transparent; }
+}
+
+@keyframes fontchange {
+    to {
+        font-family: 'Pacifico', cursive;
+        color: #ffd700;
+    }
+}
+
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.navbar {
+    background: #13142a;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 50px;
+    height: 60px;
+    border-bottom: 2px solid #222;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.brand {
+    font-size: 1.8rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    line-height: 1.1;
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.nav-links a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    padding: 8px 16px;
+    border-radius: 3px;
+    transition: background 0.18s, color 0.18s;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    background: #23234a;
+    color: #ffd700;
+}
+
+.buy-tickets {
+    background: #6c63ff;
+    color: #fff;
+    border-radius: 5px;
+    transition: background 0.2s;
+}
+
+.buy-tickets:hover {
+    background: #4834d4;
+    color: #fff;
+}
+
+
+.hero-banner {
+    background-image: url('/home/welcomimg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: white; /* Ensure text remains visible */
+    padding: 100px 20px; /* Optional spacing */
+}
+
+
+.hero-content {
+    max-width: 800px;
+    padding: 0 20px;
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    color: #ddd;
+}
+
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.cta-button {
+    background: #6c63ff;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    transition: background 0.2s;
+}
+
+.cta-button:hover {
+    background: #6c63ff;
+}
+
+.cta-button.secondary {
+    background:#4834d4;
+    border: 2px solid #6c63ff;
+}
+
+.cta-button.secondary:hover {
+    background: rgba(108, 99, 255, 0.2);
+}
+
+.login-section {
+    padding: 60px 0;
+}
+
+.login-cards {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+}
+
+.login-card {
+    background: #18192e;
+    border-radius: 10px;
+    padding: 30px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.login-card h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+}
+
+.login-card p {
+    color: #bbb;
+    margin-bottom: 25px;
+    font-size: 0.95rem;
+}
+
+.login-button {
+    display: inline-block;
+    background: #6c63ff;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    letter-spacing: 1px;
+    transition: background 0.2s;
+}
+
+.login-button:hover {
+    background: #4834d4;
+}
+
+.login-button.admin {
+    background: #ff6363;
+}
+
+.login-button.admin:hover {
+    background: #d43434;
+}
+
+.featured-movies {
+    padding: 60px 0;
+}
+
+.featured-movies h2 {
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 2rem;
+    letter-spacing: 2px;
+}
+
+.movie-slider {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0 20px;
+    }
+
+    .nav-links {
+        gap: 10px;
+    }
+
+    .login-cards {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+}

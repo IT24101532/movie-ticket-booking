@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking History - Movie Vault</title>
+    <link rel="stylesheet" href="/css/booking-history.css">
+</head>
+<body>
+<div class="navbar">
+    <span class="brand">MOVIE<br>VAULT</span>
+    <span class="nav-links">
+            <a href="/index.html">HOME</a>
+            <a href="/movies.html">MOVIES</a>
+            <a href="/theaters.html">THEATERS</a>
+            <a href="/login.html">LOGIN</a>
+        </span>
+</div>
+<div class="page-title">BOOKING HISTORY</div>
+<div class="breadcrumb">HOME / PROFILE / BOOKING HISTORY</div>
+
+<div class="history-container">
+    <div class="filter-options">
+        <select id="filterType">
+            <option value="all">All Bookings</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="past">Past</option>
+        </select>
+    </div>
+
+    <div class="bookings-list" id="bookingsContainer">
+        <!-- Booking items will be loaded dynamically -->
+        <div class="booking-item">
+            <div class="booking-header">
+                <h3>Booking #MV12345</h3>
+                <span class="booking-status upcoming">UPCOMING</span>
+            </div>
+            <div class="booking-details">
+                <div class="movie-info">
+                    <h4>Movie Title</h4>
+                    <p>Theater: Theater Name</p>
+                    <p>Date & Time: May 3, 2025 - 7:30 PM</p>
+                    <p>Seats: A1, A2, A3</p>
+                    <p>Total: $30</p>
+                </div>
+                <div class="booking-actions">
+                    <button class="action-btn view-btn">View</button>
+                    <button class="action-btn cancel-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="booking-item">
+            <div class="booking-header">
+                <h3>Booking #MV12344</h3>
+                <span class="booking-status past">PAST</span>
+            </div>
+            <div class="booking-details">
+                <div class="movie-info">
+                    <h4>Another Movie</h4>
+                    <p>Theater: Theater 2</p>
+                    <p>Date & Time: April 15, 2025 - 5:30 PM</p>
+                    <p>Seats: B4, B5</p>
+                    <p>Total: $20</p>
+                </div>
+                <div class="booking-actions">
+                    <button class="action-btn view-btn">View</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

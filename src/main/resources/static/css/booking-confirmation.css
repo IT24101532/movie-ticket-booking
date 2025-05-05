@@ -1,0 +1,186 @@
+body {
+    background: #0c0c22;
+    color: #fff;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
+    background: #13142a;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 50px;
+    height: 60px;
+    border-bottom: 2px solid #222;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.brand {
+    font-size: 1.8rem;
+    font-weight: 900;
+    letter-spacing: 3px;
+    line-height: 1.1;
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.nav-links a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    padding: 8px 16px;
+    border-radius: 3px;
+    transition: background 0.18s, color 0.18s;
+}
+
+.nav-links a:hover {
+    background: #23234a;
+    color: #ffd700;
+}
+
+.page-title {
+    font-size: 2.2rem;
+    letter-spacing: 2px;
+    color: #fff;
+    background: #0c0c22;
+    padding: 40px 0 10px 60px;
+    font-weight: bold;
+    border-bottom: 2px solid #222;
+    margin-bottom: 0;
+}
+
+.breadcrumb {
+    color: #bbb;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    background: #0c0c22;
+    padding-left: 60px;
+    padding-bottom: 10px;
+    margin-bottom: 0;
+}
+
+.confirmation-container {
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.confirmation-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.confirmation-header h2 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: #6c63ff;
+}
+
+.confirmation-header p {
+    font-size: 1.1rem;
+    color: #bbb;
+}
+
+.ticket {
+    background: #18192e;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    margin-bottom: 30px;
+}
+
+.ticket-header {
+    background: #13142a;
+    padding: 20px;
+    text-align: center;
+    border-bottom: 2px dashed #333;
+}
+
+.ticket-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+}
+
+.booking-id {
+    color: #bbb;
+    margin-top: 5px;
+}
+
+.ticket-details {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ticket-movie h4 {
+    margin: 0 0 5px 0;
+    font-size: 1.3rem;
+}
+
+.ticket-movie p {
+    color: #bbb;
+    margin: 0;
+}
+
+.ticket-info p {
+    margin: 10px 0;
+}
+
+.ticket-footer {
+    background: #13142a;
+    padding: 15px 20px;
+    font-size: 0.9rem;
+    color: #999;
+    text-align: center;
+}
+
+.confirmation-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.action-btn {
+    background: #6c63ff;
+    color: #fff;
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.action-btn:hover {
+    background: #4834d4;
+}
+
+@media (max-width: 768px) {
+    .confirmation-container {
+        padding: 0 10px;
+    }
+
+    .confirmation-actions {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .action-btn {
+        width: 100%;
+        text-align: center;
+    }
+}

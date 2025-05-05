@@ -3,24 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <title>Movies - Movie Vault</title>
+    <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/movies.css">
 </head>
-<body>
-<div class="navbar">
-    <span>MOVIE VAULT</span>
-    <span>
-        <a href="/login.html">LOGIN</a>
-        <a href="/register.html">REGISTER</a>
-        <a href="/"><img src="/img/home.png" alt="Home" class="home-icon"></a>
-    </span>
-</div>
-<div class="page-title">MOVIES</div>
-<div class="breadcrumb">HOME / MOVIES</div>
-<div class="movies-container">
-    <div class="movie-grid" id="movieGrid">
-        <!-- Movie cards will be dynamically inserted here -->
+<body style="background: #0b0b1d; color: #fff;">
+<!-- NAVBAR: Copy this from your main layout -->
+<nav style="background: #13132d; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between;">
+    <div style="font-size: 2rem; font-weight: bold; letter-spacing: 0.2em;">
+        <span style="display: block; color: #fff;">MOVIE</span>
+        <span style="display: block; color: #fff;">VAULT</span>
     </div>
-</div>
-<!-- Add your JS to load/display movies here -->
+    <div>
+        <a href="/" style="color: #fff; margin: 0 1rem;">HOME</a>
+        <a href="/movies.html" style="color: #fff; margin: 0 1rem;">MOVIES</a>
+        <a href="#" style="color: #fff; margin: 0 1rem;">DEALS AND EXCLUSIVES</a>
+        <a href="#" style="color: #fff; margin: 0 1rem;">ADVERTISE</a>
+        <a href="/buy-tickets.html" style="margin: 0 1rem; background: #6c63ff; color: #fff; padding: 0.5rem 1rem; border-radius: 6px; font-weight: bold; text-decoration: none;">BUY TICKETS</a>
+        <a href="/login.html" style="color: #fff; margin: 0 1rem;">LOGIN</a>
+    </div>
+</nav>
+
+<main style="padding: 2rem;">
+    <h1 style="color: #fff; margin-bottom: 2rem;">Now Showing</h1>
+    <div id="movieContainer" class="movie-grid"></div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/api/movies')
+            .then(response => response.json())
+            .then(movies => {
+                const container = document.getElementById('movieContainer');
+                container.innerHTML = '';
+                movies.forEach(movie => {
+                    const card = document.createElement('div');
+                    card.className = 'movie-card';
+                    card.innerHTML = `
+                        <img src="${movie.imagePath}" alt="${movie.title}" class="movie-poster">
+                        <div class="movie-info">
+                            <h3 style="color:#fff;">${movie.title}</h3>
+                            <p style="color:#cd8c38;">${movie.genre} | ${movie.language}</p>
+                            <p style="color:#fff;">Release: ${movie.releaseDate}</p>
+                            <a href="/movie-details.html?id=${movie.id}" class="details-btn" style="background:#6c63ff; color:#fff; padding:0.5em 1em; border-radius:4px; text-decoration:none;">View Details</a>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            })
+            .catch(error => {
+                document.getElementById('movieContainer').innerHTML = '<p style="color:#fff;">Error loading movies.</p>';
+            });
+    });
+</script>
 </body>
 </html>

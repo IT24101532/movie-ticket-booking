@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Seats - Movie Vault</title>
+    <link rel="stylesheet" href="/css/select-seats.css">
+</head>
+<body>
+<div class="navbar">
+    <span class="brand">MOVIE<br>VAULT</span>
+    <span class="nav-links">
+            <a href="/index.html">HOME</a>
+            <a href="/movies.html">MOVIES</a>
+            <a href="/theaters.html">THEATERS</a>
+            <a href="/login.html">LOGIN</a>
+        </span>
+</div>
+<div class="page-title">SELECT SEATS</div>
+<div class="breadcrumb">HOME / MOVIES / SELECT SEATS</div>
+
+<div class="seats-container">
+    <div class="movie-info">
+        <h2 id="movieTitle">Movie Title</h2>
+        <div class="show-details">
+            <span id="theaterName">Theater Name</span> |
+            <span id="showtime">May 3, 2025 - 7:30 PM</span>
+        </div>
+    </div>
+
+    <div class="screen-container">
+        <div class="screen">SCREEN</div>
+    </div>
+
+    <div class="seat-map">
+        <div class="seat-row">
+            <div class="row-label">A</div>
+            <div class="seat" data-row="A" data-seat="1">1</div>
+            <div class="seat" data-row="A" data-seat="2">2</div>
+            <div class="seat" data-row="A" data-seat="3">3</div>
+            <div class="seat occupied" data-row="A" data-seat="4">4</div>
+            <div class="seat occupied" data-row="A" data-seat="5">5</div>
+            <div class="seat" data-row="A" data-seat="6">6</div>
+            <div class="seat" data-row="A" data-seat="7">7</div>
+            <div class="seat" data-row="A" data-seat="8">8</div>
+        </div>
+        <!-- More rows would go here -->
+    </div>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="seat-demo"></div>
+            <span>Available</span>
+        </div>
+        <div class="legend-item">
+            <div class="seat-demo selected"></div>
+            <span>Selected</span>
+        </div>
+        <div class="legend-item">
+            <div class="seat-demo occupied"></div>
+            <span>Occupied</span>
+        </div>
+    </div>
+
+    <div class="booking-summary">
+        <p>Selected seats: <span id="selectedSeats">None</span></p>
+        <p>Total: <span id="totalPrice">$0</span></p>
+        <button id="confirmBtn" class="confirm-btn">Confirm Booking</button>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Theaters - Movie Vault</title>
+    <link rel="stylesheet" href="/css/admin-theaters.css">
+</head>
+<body>
+<div class="navbar">
+    <span class="brand">MOVIE<br>VAULT ADMIN</span>
+    <span class="nav-links">
+        <a href="/theaters.html">VIEW THEATERS</a>
+        <a href="/logout">LOGOUT</a>
+    </span>
+</div>
+<div class="page-title">ADMIN THEATER MANAGEMENT</div>
+<div class="breadcrumb">HOME / ADMIN / THEATERS</div>
+<div class="admin-theaters-container">
+    <h2>Add New Theater</h2>
+    <form class="admin-theater-form" action="/admin/add-theater" method="post">
+        <input type="text" name="name" placeholder="Theater Name" required>
+        <input type="text" name="location" placeholder="Location" required>
+        <input type="number" name="seats" placeholder="Number of Seats" required>
+        <button type="submit">Add Theater</button>
+    </form>
+    <h2>All Theaters</h2>
+    <div class="admin-theater-list" id="adminTheaterList">
+        <!-- List of theaters with edit/delete buttons goes here -->
+    </div>
+</div>
+</body>
+</html>

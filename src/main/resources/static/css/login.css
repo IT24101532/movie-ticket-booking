@@ -5,7 +5,7 @@ body {
 }
 .navbar {
     background: #0c0c22;
-    color: #fff;
+    color:  #f3ce13;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -31,7 +31,7 @@ body {
     color: #ffd700;
 }
 .login-container, .registration-container {
-    background: #fff;
+    background: #f3ce13;
     border-radius: 16px;
     box-shadow: 0 0 18px #0001;
     padding: 40px 30px 30px 30px;
@@ -64,8 +64,8 @@ body {
 }
 .login-form button,
 .registration-form button {
-    background: #5d5dfc;
-    color: #fff;
+    background: #f5f5f5;
+    color: #;
     border: none;
     border-radius: 4px;
     font-size: 16px;

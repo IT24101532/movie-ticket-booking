@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Login - Movie Vault</title>
+    <link rel="stylesheet" href="/css/login.css">
+    <style>
+        .login-container {
+            background: #13132d;
+            border-radius: 8px;
+        }
+        button {
+            background-color: #ff4757;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <span><b>MOVIE VAULT</b> </span>
+    <span style="float:right;"><a href="/index.html">HOME</a></span>
+</div>
+<div class="login-container">
+    <h2>ADMIN LOGIN</h2>
+    <form action="/admin-auth" method="post">
+        <div><input type="text" name="username" placeholder="Admin Username" required></div>
+        <div><input type="password" name="password" placeholder="Password" required></div>
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+        <button type="submit">LOGIN</button>
+    </form>
+</div>
+</body>
+</html>

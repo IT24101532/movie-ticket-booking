@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Refund - Movie Vault</title>
+    <link rel="stylesheet" href="/css/refund.css">
+</head>
+<body>
+<div class="navbar">
+    <span class="brand">MOVIE<br>VAULT</span>
+    <span class="nav-links">
+        <a href="/index.html">HOME</a>
+        <a href="/movies.html">MOVIES</a>
+        <a href="/login.html">LOGIN</a>
+    </span>
+</div>
+<div class="page-title">REFUND REQUEST</div>
+<div class="breadcrumb">HOME / PAYMENT / REFUND</div>
+<div class="refund-container">
+    <form class="refund-form" action="/api/refund" method="post">
+        <input type="text" name="paymentId" placeholder="Payment ID" required>
+        <input type="text" name="userId" placeholder="User ID" required>
+        <textarea name="reason" placeholder="Reason for Refund" required></textarea>
+        <button type="submit">Request Refund</button>
+    </form>
+</div>
+</body>
+</html>

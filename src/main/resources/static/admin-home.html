@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - Movie Vault</title>
+    <link rel="stylesheet" href="/css/admin-home.css">
+</head>
+<body>
+<div class="navbar">
+    <div class="brand">MOVIE<br>VAULT</div>
+    <div class="nav-links">
+        <a href="/index.html">HOME</a>
+        <a href="/admin-movies.html">MOVIES</a>
+        <a href="/admin-theaters.html">THEATERS</a>
+        <a href="/admin-showtimes.html">SHOWTIMES</a>
+        <a href="/booking-history.html">BOOKINGS</a>
+        <a href="/logout" class="logout-btn">LOGOUT</a>
+    </div>
+</div>
+
+<div class="page-title">ADMIN DASHBOARD</div>
+<div class="breadcrumb">HOME / ADMIN</div>
+
+<div class="dashboard-container">
+    <div class="stats-cards">
+        <div class="stat-card">
+            <div class="stat-value" id="movieCount">0</div>
+            <div class="stat-label">Total Movies</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="theaterCount">0</div>
+            <div class="stat-label">Theaters</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="showtimeCount">0</div>
+            <div class="stat-label">Showtimes</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="bookingCount">0</div>
+            <div class="stat-label">Active Bookings</div>
+        </div>
+    </div>
+
+    <div class="admin-actions">
+        <h2>Quick Actions</h2>
+        <div class="action-cards">
+            <a href="/admin-movies.html" class="action-card">
+                <div class="action-icon">🎬</div>
+                <div class="action-title">Manage Movies</div>
+                <div class="action-desc">Add, edit, or delete movies</div>
+            </a>
+            <a href="/admin-theaters.html" class="action-card">
+                <div class="action-icon">🏢</div>
+                <div class="action-title">Manage Theaters</div>
+                <div class="action-desc">Add, edit theaters and seating</div>
+            </a>
+            <a href="/admin-showtimes.html" class="action-card">
+                <div class="action-icon">🕒</div>
+                <div class="action-title">Manage Showtimes</div>
+                <div class="action-desc">Schedule movie showtimes</div>
+            </a>
+            <a href="/booking-history.html" class="action-card">
+                <div class="action-icon">🎟️</div>
+                <div class="action-title">View Bookings</div>
+                <div class="action-desc">Manage customer bookings</div>
+            </a>
+        </div>
+    </div>
+
+    <div class="recent-activity">
+        <h2>Recent Activity</h2>
+        <div class="activity-list">
+            <div class="activity-item">
+                <div class="activity-time">10:25 AM</div>
+                <div class="activity-desc">New movie added: "Interstellar 2"</div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-time">Yesterday</div>
+                <div class="activity-desc">Updated theater: "Screen 3" - added 24 seats</div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-time">Yesterday</div>
+                <div class="activity-desc">15 new bookings processed</div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-time">05/01/2025</div>
+                <div class="activity-desc">Showtime updated for "Avatar 3"</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    fetch('/api/admin/stats')
+      .then(res => res.json())
+      .then(stats => {
+        document.getElementById('movieCount').textContent = stats.movies;
+        document.getElementById('theaterCount').textContent = stats.theaters;
+        document.getElementById('showtimeCount').textContent = stats.showtimes;
+        document.getElementById('bookingCount').textContent = stats.bookings;
+      });
+</script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Confirmation - Movie Vault</title>
+    <link rel="stylesheet" href="/css/booking-confirmation.css">
+</head>
+<body>
+<div class="navbar">
+    <span class="brand">MOVIE<br>VAULT</span>
+    <span class="nav-links">
+            <a href="/index.html">HOME</a>
+            <a href="/movies.html">MOVIES</a>
+            <a href="/theaters.html">THEATERS</a>
+            <a href="/login.html">LOGIN</a>
+        </span>
+</div>
+<div class="page-title">BOOKING CONFIRMATION</div>
+<div class="breadcrumb">HOME / BOOKING / CONFIRMATION</div>
+
+<div class="confirmation-container">
+    <div class="confirmation-header">
+        <h2>Booking Confirmed!</h2>
+        <p>Your booking has been processed and confirmed.</p>
+    </div>
+
+    <div class="ticket">
+        <div class="ticket-header">
+            <h3>MOVIE VAULT</h3>
+            <p class="booking-id">Booking ID: <span id="bookingId">MV12345</span></p>
+        </div>
+        <div class="ticket-details">
+            <div class="ticket-movie">
+                <h4 id="movieTitle">Movie Title</h4>
+                <p id="movieLanguage">English</p>
+            </div>
+            <div class="ticket-info">
+                <p><strong>Theater:</strong> <span id="theaterName">Theater Name</span></p>
+                <p><strong>Date & Time:</strong> <span id="showtime">May 3, 2025 - 7:30 PM</span></p>
+                <p><strong>Seats:</strong> <span id="seatNumbers">A1, A2, A3</span></p>
+                <p><strong>Total Amount:</strong> <span id="totalAmount">$30</span></p>
+            </div>
+        </div>
+        <div class="ticket-footer">
+            <p>Please arrive 15 minutes before showtime.</p>
+            <p>This ticket is non-refundable.</p>
+        </div>
+    </div>
+
+    <div class="confirmation-actions">
+        <a href="/booking-history.html" class="action-btn">View All Bookings</a>
+        <a href="/movies.html" class="action-btn">Book Another Movie</a>
+    </div>
+</div>
+</body>
+</html>

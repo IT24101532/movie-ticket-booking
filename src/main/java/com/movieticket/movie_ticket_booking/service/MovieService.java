@@ -1,65 +1,127 @@
 package com.movieticket.movie_ticket_booking.service;
 
 import com.movieticket.movie_ticket_booking.model.Movie;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.*;
+import java.nio.file.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
+@Service
 public class MovieService {
-    private final String movieFile = "src/main/resources/data/movies.txt";
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private final String DATA_FILE = "data/movies.txt";
+    private final String UPLOAD_DIR = "uploads/movies/";
+    private final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
-    public void saveMovie(Movie movie) throws IOException {
-        BufferedWriter writer = new BufferedWriter(new FileWriter(movieFile, true));
-        writer.write(movie.getTitle() + "," +
-                movie.getGenre() + "," +
-                movie.getLanguage() + "," +
-                movie.getReleaseDate().format(DATE_FORMATTER) + "," +
-                movie.getDescription());
-        writer.newLine();
-        writer.close();
+    public MovieService() {
+        // Create directories at startup
+        try {
+            Files.createDirectories(Paths.get("data"));
+            Files.createDirectories(Paths.get("uploads/movies"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public List<Movie> getAllMovies() throws IOException {
+    public void saveMovie(Movie movie, MultipartFile imageFile) throws IOException {
+        // Generate unique ID
+        movie.setId(String.valueOf(System.currentTimeMillis()));
+
+        // Set defaults if not provided
+        if (movie.getShowTime() == null) movie.setShowTime(LocalTime.of(18, 0));
+        if (movie.getTheater() == null) movie.setTheater("Cinema Hall");
+        if (movie.getEventType() == null) movie.setEventType("Movie");
+        if (movie.getPrice() == null) movie.setPrice(300.0);
+
+        // Save image and get path
+        String imagePath = saveImage(imageFile);
+        movie.setImagePath(imagePath);
+
+        // Save movie data
+        try (BufferedWriter writer = Files.newBufferedWriter(
+                Paths.get(DATA_FILE),
+                StandardOpenOption.CREATE,
+                StandardOpenOption.APPEND)) {
+            writer.write(String.join("|",
+                    movie.getId(),
+                    movie.getTitle(),
+                    movie.getGenre(),
+                    movie.getLanguage(),
+                    movie.getReleaseDate().format(DATE_FORMATTER),
+                    movie.getShowTime().format(TIME_FORMATTER),
+                    movie.getTheater(),
+                    movie.getDescription(),
+                    movie.getImagePath(),
+                    String.valueOf(movie.getPrice()),
+                    movie.getEventType()
+            ));
+            writer.newLine();
+        }
+    }
+
+    private String saveImage(MultipartFile imageFile) throws IOException {
+        if (imageFile == null || imageFile.isEmpty()) {
+            return "/img/default-movie.jpg";
+        }
+
+        String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename().replace(" ", "_");
+        Path filePath = Paths.get(UPLOAD_DIR + fileName);
+        Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        return "/uploads/movies/" + fileName;
+    }
+
+    public List<Movie> getAllMovies() {
         List<Movie> movies = new ArrayList<>();
-        File file = new File(movieFile);
-        if (!file.exists()) {
-            file.getParentFile().mkdirs();
-            file.createNewFile();
+        Path path = Paths.get(DATA_FILE);
+
+        if (!Files.exists(path)) {
             return movies;
         }
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            String[] parts = line.split(",");
-            if (parts.length == 5) {
-                Movie movie = new Movie(
-                        parts[0], // title
-                        parts[1], // genre
-                        parts[2], // language
-                        LocalDate.parse(parts[3], DATE_FORMATTER), // releaseDate
-                        parts[4]  // description
-                );
-                movies.add(movie);
+
+        try (BufferedReader reader = Files.newBufferedReader(path)) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                try {
+                    String[] parts = line.split("\\|", -1); // Keep empty strings
+
+                    Movie movie = new Movie();
+                    if (parts.length > 0) movie.setId(parts[0]);
+                    if (parts.length > 1) movie.setTitle(parts[1]);
+                    if (parts.length > 2) movie.setGenre(parts[2]);
+                    if (parts.length > 3) movie.setLanguage(parts[3]);
+                    if (parts.length > 4) movie.setReleaseDate(LocalDate.parse(parts[4], DATE_FORMATTER));
+                    if (parts.length > 5) movie.setShowTime(LocalTime.parse(parts[5], TIME_FORMATTER));
+                    if (parts.length > 6) movie.setTheater(parts[6]);
+                    if (parts.length > 7) movie.setDescription(parts[7]);
+                    if (parts.length > 8) movie.setImagePath(parts[8]);
+                    if (parts.length > 9) movie.setPrice(Double.parseDouble(parts[9]));
+                    if (parts.length > 10) movie.setEventType(parts[10]);
+
+                    movies.add(movie);
+                } catch (Exception e) {
+                    System.err.println("Error parsing movie: " + line);
+                    e.printStackTrace();
+                }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        reader.close();
+
         return movies;
     }
 
-    // Insertion Sort by release date
-    public List<Movie> sortMoviesByReleaseDate(List<Movie> movies) {
-        for (int i = 1; i < movies.size(); i++) {
-            Movie key = movies.get(i);
-            int j = i - 1;
-            while (j >= 0 && movies.get(j).getReleaseDate().isAfter(key.getReleaseDate())) {
-                movies.set(j + 1, movies.get(j));
-                j--;
+    public Movie getMovieById(String id) {
+        for (Movie movie : getAllMovies()) {
+            if (movie.getId() != null && movie.getId().equals(id)) {
+                return movie;
             }
-            movies.set(j + 1, key);
         }
-        return movies;
+        return null;
     }
 }
