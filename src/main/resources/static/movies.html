@@ -5,22 +5,93 @@
     <title>Movies - Movie Vault</title>
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/movies.css">
+    <style>
+        .navbar {
+            background: #13132d;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .brand {
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 0.2em;
+            line-height: 1;
+            color: #fff;
+        }
+        .nav-center {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            justify-content: center;
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+        }
+        .nav-link {
+            color: #fff;
+            margin: 0 1rem;
+            text-decoration: none;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            transition: color 0.2s;
+        }
+        .nav-link:hover {
+            color: #6c63ff;
+        }
+        .welcome-message {
+            color: #6c63ff;
+            margin-right: 1.2rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            letter-spacing: 0.03em;
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+        }
+        .welcome-message b {
+            color: #fff;
+            font-weight: bold;
+            background: #6c63ff;
+            border-radius: 12px;
+            padding: 0.2em 0.8em;
+            margin-left: 0.2em;
+        }
+        .action-btn {
+            background: #6c63ff;
+            color: #fff;
+            padding: 0.5rem 1.1rem;
+            border-radius: 6px;
+            font-weight: bold;
+            text-decoration: none;
+            margin: 0 0.5rem;
+            transition: background 0.2s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .action-btn:hover {
+            background: #5952cc;
+        }
+    </style>
 </head>
 <body style="background: #0b0b1d; color: #fff;">
-<!-- NAVBAR: Copy this from your main layout -->
-<nav style="background: #13132d; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between;">
-    <div style="font-size: 2rem; font-weight: bold; letter-spacing: 0.2em;">
-        <span style="display: block; color: #fff;">MOVIE</span>
-        <span style="display: block; color: #fff;">VAULT</span>
+<nav class="navbar">
+    <div class="brand">
+        <span>MOVIE</span><br>
+        <span>VAULT</span>
     </div>
-    <div>
-        <a href="/" style="color: #fff; margin: 0 1rem;">HOME</a>
-        <a href="/movies.html" style="color: #fff; margin: 0 1rem;">MOVIES</a>
-        <a href="#" style="color: #fff; margin: 0 1rem;">DEALS AND EXCLUSIVES</a>
-        <a href="#" style="color: #fff; margin: 0 1rem;">ADVERTISE</a>
-        <a href="/buy-tickets.html" style="margin: 0 1rem; background: #6c63ff; color: #fff; padding: 0.5rem 1rem; border-radius: 6px; font-weight: bold; text-decoration: none;">BUY TICKETS</a>
-        <a href="/login.html" style="color: #fff; margin: 0 1rem;">LOGIN</a>
+    <div class="nav-center">
+        <a href="/" class="nav-link">HOME</a>
+        <a href="/movies.html" class="nav-link">MOVIES</a>
+        <a href="#" class="nav-link">DEALS AND EXCLUSIVES</a>
+        <!-- <a href="#" class="nav-link">ADVERTISE</a>  Uncomment if you want this -->
     </div>
+    <div class="nav-right" id="navRight"></div>
 </nav>
 
 <main style="padding: 2rem;">
@@ -29,31 +100,74 @@
 </main>
 
 <script>
+    function renderNavbar() {
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+        const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+        const userName = sessionStorage.getItem('userName') || '';
+
+        let rightNav = '';
+
+        if (isLoggedIn) {
+            rightNav = `
+                <span class="welcome-message">Welcome,<b>${userName}</b></span>
+                <a href="/buy-tickets.html" class="action-btn">BUY TICKETS</a>
+                ${isAdmin ?
+                    '<a href="/admin-home.html" class="nav-link">ADMIN DASHBOARD</a>' :
+                    '<a href="/profile.html" class="nav-link">PROFILE</a>'}
+                <a href="#" onclick="logout()" class="nav-link">LOGOUT</a>
+            `;
+        } else {
+            rightNav = `
+                <a href="/login.html" class="nav-link">LOGIN</a>
+                <a href="/register.html" class="action-btn">REGISTER</a>
+            `;
+        }
+
+        document.getElementById('navRight').innerHTML = rightNav;
+    }
+
+    function logout() {
+        sessionStorage.clear();
+        fetch('/logout', { method: 'POST' })
+            .then(() => window.location.href = '/')
+            .catch(() => window.location.href = '/');
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
+        renderNavbar();
+
         fetch('/api/movies')
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error('Network error');
+                return response.json();
+            })
             .then(movies => {
                 const container = document.getElementById('movieContainer');
-                container.innerHTML = '';
-                movies.forEach(movie => {
-                    const card = document.createElement('div');
-                    card.className = 'movie-card';
-                    card.innerHTML = `
+                container.innerHTML = movies.map(movie => `
+                    <div class="movie-card">
                         <img src="${movie.imagePath}" alt="${movie.title}" class="movie-poster">
                         <div class="movie-info">
-                            <h3 style="color:#fff;">${movie.title}</h3>
-                            <p style="color:#cd8c38;">${movie.genre} | ${movie.language}</p>
-                            <p style="color:#fff;">Release: ${movie.releaseDate}</p>
-                            <a href="/movie-details.html?id=${movie.id}" class="details-btn" style="background:#6c63ff; color:#fff; padding:0.5em 1em; border-radius:4px; text-decoration:none;">View Details</a>
+                            <h3>${movie.title}</h3>
+                            <p class="genre">${movie.genre} | ${movie.language}</p>
+                            <p class="release-date">${movie.releaseDate}</p>
+                            ${sessionStorage.getItem('isLoggedIn') === 'true' ?
+                                `<a href="/movie-details.html?id=${movie.id}" class="details-btn">View Details</a>` :
+                                `<button class="details-btn disabled" onclick="redirectToLogin(event)">Login to View</button>`}
                         </div>
-                    `;
-                    container.appendChild(card);
-                });
+                    </div>
+                `).join('');
             })
             .catch(error => {
-                document.getElementById('movieContainer').innerHTML = '<p style="color:#fff;">Error loading movies.</p>';
+                document.getElementById('movieContainer').innerHTML =
+                    '<p class="error-message">Error loading movies. Please try again later.</p>';
             });
     });
+
+    function redirectToLogin(e) {
+        e.preventDefault();
+        alert('Please log in to view movie details.');
+        window.location.href = '/login.html';
+    }
 </script>
 </body>
 </html>

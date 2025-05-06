@@ -1,32 +1,140 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Theaters - Movie Vault</title>
+    <title>Manage Theaters</title>
     <link rel="stylesheet" href="/css/admin-theaters.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            padding: 32px 24px;
+        }
+        h1, h2 {
+            color: #2c3e50;
+            margin-bottom: 16px;
+        }
+        form {
+            margin-bottom: 24px;
+        }
+        .form-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+        .form-row input, .form-row select {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+        .btn {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn-danger {
+            background: #dc3545;
+        }
+        .btn-danger:hover {
+            background: #a71d2a;
+        }
+        .theater-card {
+            background: #f4f7fa;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        }
+        .theater-details {
+            font-size: 1.05em;
+        }
+        @media (max-width: 600px) {
+            .form-row { flex-direction: column; }
+            .container { padding: 16px 6px; }
+        }
+    </style>
+    <script>
+        window.onload = function() {
+            fetch('/api/all-theaters')
+              .then(res => res.json())
+              .then(theaters => populateDropdown('theaterDropdown', theaters, 'name'));
+            fetch('/api/movies')
+              .then(res => res.json())
+              .then(movies => populateDropdown('movieDropdown', movies, 'title'));
+            fetch('/api/all-theaters')
+              .then(res => res.json())
+              .then(theaters => displayTheaters(theaters));
+        };
+        function populateDropdown(dropdownId, items, nameField) {
+            const dropdown = document.getElementById(dropdownId);
+            dropdown.innerHTML = items.map(item =>
+                `<option value="${item.id}">${item[nameField]}</option>`
+            ).join('');
+        }
+        function displayTheaters(theaters) {
+            const list = document.getElementById('theaterList');
+            if (theaters.length === 0) {
+                list.innerHTML = "<div style='color:#888;'>No theaters added yet.</div>";
+                return;
+            }
+            list.innerHTML = theaters.map(t => `
+                <div class="theater-card">
+                    <div class="theater-details">
+                        <b>${t.name}</b> <span style="color:#555;">(${t.location})</span><br>
+                        <span style="font-size:0.97em;color:#555;">Seats: ${t.totalSeats}, Rows: ${t.seatRows}</span>
+                    </div>
+                    <form action="/admin/delete-theater" method="post" style="margin:0;">
+                        <input type="hidden" name="theaterId" value="${t.id}">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            `).join('');
+        }
+    </script>
 </head>
 <body>
-<div class="navbar">
-    <span class="brand">MOVIE<br>VAULT ADMIN</span>
-    <span class="nav-links">
-        <a href="/theaters.html">VIEW THEATERS</a>
-        <a href="/logout">LOGOUT</a>
-    </span>
-</div>
-<div class="page-title">ADMIN THEATER MANAGEMENT</div>
-<div class="breadcrumb">HOME / ADMIN / THEATERS</div>
-<div class="admin-theaters-container">
-    <h2>Add New Theater</h2>
-    <form class="admin-theater-form" action="/admin/add-theater" method="post">
-        <input type="text" name="name" placeholder="Theater Name" required>
-        <input type="text" name="location" placeholder="Location" required>
-        <input type="number" name="seats" placeholder="Number of Seats" required>
-        <button type="submit">Add Theater</button>
+<div class="container">
+    <h1>Manage Theaters</h1>
+    <form action="/admin/add-theater" method="post">
+        <div class="form-row">
+            <input type="text" name="name" placeholder="Theater Name" required>
+            <input type="text" name="location" placeholder="Location" required>
+            <input type="number" name="totalSeats" placeholder="Total Seats" required>
+            <input type="number" name="seatRows" placeholder="Seat Rows" required>
+            <button type="submit" class="btn">Add Theater</button>
+        </div>
     </form>
-    <h2>All Theaters</h2>
-    <div class="admin-theater-list" id="adminTheaterList">
-        <!-- List of theaters with edit/delete buttons goes here -->
-    </div>
+    <h2>Assign Movie to Theater</h2>
+    <form action="/admin/assign-movie" method="post">
+        <div class="form-row">
+            <select id="theaterDropdown" name="theaterId" required></select>
+            <select id="movieDropdown" name="movieId" required></select>
+            <button type="submit" class="btn">Assign Movie</button>
+        </div>
+    </form>
+    <h2>Existing Theaters</h2>
+    <div id="theaterList"></div>
 </div>
 </body>
 </html>

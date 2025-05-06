@@ -124,4 +124,35 @@ public class MovieService {
         }
         return null;
     }
+
+    public boolean deleteMovie(String movieId) throws IOException {
+        List<Movie> movies = getAllMovies();
+        boolean removed = movies.removeIf(movie -> movie.getId().equals(movieId));
+
+        if (removed) {
+            saveAllMovies(movies);
+        }
+        return removed;
+    }
+
+    private void saveAllMovies(List<Movie> movies) throws IOException {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(DATA_FILE))) {
+            for (Movie movie : movies) {
+                writer.write(String.join("|",
+                        movie.getId(),
+                        movie.getTitle(),
+                        movie.getGenre(),
+                        movie.getLanguage(),
+                        movie.getReleaseDate().format(DATE_FORMATTER),
+                        movie.getShowTime().format(TIME_FORMATTER),
+                        movie.getTheater(),
+                        movie.getDescription(),
+                        movie.getImagePath(),
+                        String.valueOf(movie.getPrice()),
+                        movie.getEventType()
+                ));
+                writer.newLine();
+            }
+        }
+    }
 }

@@ -3,69 +3,269 @@
 <head>
     <meta charset="UTF-8">
     <title>Select Seats - Movie Vault</title>
+    <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/select-seats.css">
+    <style>
+        body { background: #0b0b1d; color: #fff; font-family: 'Segoe UI', Arial, sans-serif; }
+        .seat-container {
+            background: #13132d;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 800px;
+        }
+        .screen {
+            background: #6c63ff;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(108, 99, 255, 0.5);
+        }
+        .movie-info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+        .seat-map {
+            margin: 30px auto;
+            max-width: 500px;
+        }
+        .row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .row-label {
+            width: 30px;
+            text-align: center;
+            color: #cd8c38;
+            margin-right: 5px;
+            font-weight: bold;
+        }
+        .seat {
+            width: 25px;
+            height: 25px;
+            margin: 3px;
+            border-radius: 5px;
+            background: #2c2c54;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .seat:hover {
+            transform: scale(1.1);
+        }
+        .seat.selected { background: #6c63ff; }
+        .seat.occupied { background: #ff6b6b; cursor: not-allowed; }
+        .booking-summary {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+        }
+        .book-btn {
+            background: #6c63ff;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .book-btn:hover {
+            background: #5952cc;
+        }
+        .seat-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .legend-box {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+        }
+    </style>
 </head>
 <body>
-<div class="navbar">
-    <span class="brand">MOVIE<br>VAULT</span>
-    <span class="nav-links">
-            <a href="/index.html">HOME</a>
-            <a href="/movies.html">MOVIES</a>
-            <a href="/theaters.html">THEATERS</a>
-            <a href="/login.html">LOGIN</a>
-        </span>
-</div>
-<div class="page-title">SELECT SEATS</div>
-<div class="breadcrumb">HOME / MOVIES / SELECT SEATS</div>
+<nav style="background: #13132d; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between;">
+    <div style="font-size: 2rem; font-weight: bold; letter-spacing: 0.2em;">
+        <span style="display: block; color: #fff;">MOVIE</span>
+        <span style="display: block; color: #fff;">VAULT</span>
+    </div>
+    <div>
+        <a href="/" style="color: #fff; margin: 0 1rem;">HOME</a>
+        <a href="/movies.html" style="color: #fff; margin: 0 1rem;">MOVIES</a>
+        <a href="#" style="color: #fff; margin: 0 1rem;">DEALS AND EXCLUSIVES</a>
+        <a href="/login.html" style="color: #fff; margin: 0 1rem;">LOGIN</a>
+    </div>
+</nav>
 
-<div class="seats-container">
+<div class="seat-container">
+    <h1>Select Your Seats</h1>
+
     <div class="movie-info">
-        <h2 id="movieTitle">Movie Title</h2>
-        <div class="show-details">
-            <span id="theaterName">Theater Name</span> |
-            <span id="showtime">May 3, 2025 - 7:30 PM</span>
-        </div>
+        <h2 id="movieTitle">Loading movie details...</h2>
+        <p id="theaterName">Loading theater details...</p>
+        <p id="showTime">Show Time: Loading...</p>
     </div>
 
-    <div class="screen-container">
-        <div class="screen">SCREEN</div>
-    </div>
+    <div class="screen">SCREEN</div>
 
-    <div class="seat-map">
-        <div class="seat-row">
-            <div class="row-label">A</div>
-            <div class="seat" data-row="A" data-seat="1">1</div>
-            <div class="seat" data-row="A" data-seat="2">2</div>
-            <div class="seat" data-row="A" data-seat="3">3</div>
-            <div class="seat occupied" data-row="A" data-seat="4">4</div>
-            <div class="seat occupied" data-row="A" data-seat="5">5</div>
-            <div class="seat" data-row="A" data-seat="6">6</div>
-            <div class="seat" data-row="A" data-seat="7">7</div>
-            <div class="seat" data-row="A" data-seat="8">8</div>
-        </div>
-        <!-- More rows would go here -->
-    </div>
-
-    <div class="legend">
+    <div class="seat-legend">
         <div class="legend-item">
-            <div class="seat-demo"></div>
+            <div class="legend-box" style="background: #2c2c54;"></div>
             <span>Available</span>
         </div>
         <div class="legend-item">
-            <div class="seat-demo selected"></div>
+            <div class="legend-box" style="background: #6c63ff;"></div>
             <span>Selected</span>
         </div>
         <div class="legend-item">
-            <div class="seat-demo occupied"></div>
+            <div class="legend-box" style="background: #ff6b6b;"></div>
             <span>Occupied</span>
         </div>
     </div>
 
+    <div class="seat-map" id="seatMap">
+        <p style="text-align: center; color: #888;">Loading seat layout...</p>
+    </div>
+
     <div class="booking-summary">
-        <p>Selected seats: <span id="selectedSeats">None</span></p>
-        <p>Total: <span id="totalPrice">$0</span></p>
-        <button id="confirmBtn" class="confirm-btn">Confirm Booking</button>
+        <p>Selected Seats: <span id="selectedSeats">None</span></p>
+        <p>Total Price: Rs. <span id="totalPrice">0</span></p>
+        <button id="bookBtn" class="book-btn">Proceed to Payment</button>
     </div>
 </div>
+
+<script>
+    if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+        window.location.href = '/login.html';
+    }
+
+    let movieId, theaterId, rows, seatsPerRow;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        movieId = urlParams.get('id');
+        theaterId = urlParams.get('theaterId');
+
+        if (!movieId || !theaterId) {
+            alert('Missing movie or theater information');
+            return;
+        }
+
+        // Fetch and display movie data
+        fetch(`/api/movies/${movieId}`)
+            .then(res => res.json())
+            .then(movie => {
+                document.getElementById('movieTitle').textContent = movie.title;
+                document.getElementById('showTime').textContent = `Show Time: ${movie.showTime}`;
+                document.title = `Book Tickets: ${movie.title} - Movie Vault`;
+            })
+            .catch(() => {
+                document.getElementById('movieTitle').textContent = 'Movie information unavailable';
+            });
+
+        // Fetch and display theater data
+        fetch(`/api/theaters/${theaterId}`)
+            .then(res => res.json())
+            .then(theater => {
+                document.getElementById('theaterName').textContent = theater.name;
+                rows = theater.seatRows;
+                seatsPerRow = Math.floor(theater.totalSeats / theater.seatRows);
+                generateSeats(rows, seatsPerRow);
+                startSeatRefresh();
+            })
+            .catch(() => {
+                document.getElementById('theaterName').textContent = 'Theater information unavailable';
+                document.getElementById('seatMap').innerHTML = '<p style="text-align: center; color: #ff6b6b;">Could not load seat layout. Please try again later.</p>';
+            });
+
+        document.getElementById('bookBtn').onclick = function() {
+            const selectedSeats = document.querySelectorAll('.seat.selected');
+            if (selectedSeats.length === 0) {
+                alert('Please select at least one seat');
+                return;
+            }
+            const seatIds = Array.from(selectedSeats).map(seat => seat.dataset.id);
+            sessionStorage.setItem('bookingDetails', JSON.stringify({
+                movieId: movieId,
+                theaterId: theaterId,
+                seatNumbers: seatIds,
+                totalAmount: seatIds.length * 300
+            }));
+            window.location.href = '/payment.html';
+        };
+    });
+
+    function generateSeats(rows, seatsPerRow) {
+        const seatMap = document.getElementById('seatMap');
+        seatMap.innerHTML = '';
+        for (let i = 0; i < rows; i++) {
+            const row = document.createElement('div');
+            row.className = 'row';
+            const rowLabel = document.createElement('div');
+            rowLabel.className = 'row-label';
+            rowLabel.textContent = String.fromCharCode(65 + i);
+            row.appendChild(rowLabel);
+            for (let j = 0; j < seatsPerRow; j++) {
+                const seat = document.createElement('div');
+                seat.className = 'seat';
+                seat.dataset.id = `${String.fromCharCode(65 + i)}${j+1}`;
+                seat.onclick = toggleSeat;
+                row.appendChild(seat);
+            }
+            seatMap.appendChild(row);
+        }
+        refreshSeatStatus();
+    }
+
+    function refreshSeatStatus() {
+        fetch(`/api/bookings/seats?movieId=${movieId}&theaterId=${theaterId}`)
+            .then(res => res.json())
+            .then(bookedSeats => {
+                document.querySelectorAll('.seat').forEach(seat => {
+                    const isOccupied = bookedSeats.includes(seat.dataset.id);
+                    seat.classList.toggle('occupied', isOccupied);
+                    if (isOccupied) {
+                        seat.classList.remove('selected');
+                        seat.onclick = null;
+                    } else {
+                        seat.onclick = toggleSeat;
+                    }
+                });
+                updateSummary();
+            });
+    }
+
+    function startSeatRefresh() {
+        setInterval(refreshSeatStatus, 5000);
+    }
+
+    function toggleSeat() {
+        if (this.classList.contains('occupied')) return;
+        this.classList.toggle('selected');
+        updateSummary();
+    }
+
+    function updateSummary() {
+        const selectedSeats = document.querySelectorAll('.seat.selected');
+        const seatIds = Array.from(selectedSeats).map(seat => seat.dataset.id);
+        document.getElementById('selectedSeats').textContent =
+            seatIds.length > 0 ? seatIds.join(', ') : 'None';
+        document.getElementById('totalPrice').textContent = selectedSeats.length * 300;
+    }
+</script>
 </body>
 </html>

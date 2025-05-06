@@ -40,47 +40,11 @@ public class MovieController {
         return "movie-details";
     }
 
-    @PostMapping("/admin/add-movie")
-    public String addMovie(
-            @RequestParam String title,
-            @RequestParam String genre,
-            @RequestParam String language,
-            @RequestParam String releaseDate,
-            @RequestParam(required = false) String showTime,
-            @RequestParam(required = false) String theater,
-            @RequestParam String description,
-            @RequestParam(required = false) Double price,
-            @RequestParam(required = false) String eventType,
-            @RequestParam MultipartFile movieImage,
-            Model model
-    ) {
-        try {
-            Movie movie = new Movie();
-            movie.setTitle(title);
-            movie.setGenre(genre);
-            movie.setLanguage(language);
-            movie.setReleaseDate(LocalDate.parse(releaseDate));
-            movie.setDescription(description);
 
-            if (showTime != null && !showTime.isEmpty()) {
-                movie.setShowTime(LocalTime.parse(showTime));
-            }
-            if (theater != null && !theater.isEmpty()) {
-                movie.setTheater(theater);
-            }
-            if (price != null) {
-                movie.setPrice(price);
-            }
-            if (eventType != null && !eventType.isEmpty()) {
-                movie.setEventType(eventType);
-            }
-
-            movieService.saveMovie(movie, movieImage);
-            return "redirect:/movies";
-        } catch (IOException e) {
-            e.printStackTrace();
-            model.addAttribute("error", "Failed to save movie: " + e.getMessage());
-            return "admin-movies";
-        }
+    @DeleteMapping("/api/movies/{movieId}")
+    @ResponseBody
+    public boolean deleteMovie(@PathVariable String movieId) throws IOException {
+        return movieService.deleteMovie(movieId);
     }
+
 }

@@ -11,8 +11,6 @@
         <span class="scope">MOVIE</span><br> VAULT
     </div>
     <nav>
-
-
         <a href="index.html">HOME</a>
         <a href="movies.html">MOVIES</a>
         <a href="#">DEALS AND EXCLUSIVES</a>
@@ -27,7 +25,7 @@
         <div class="breadcrumb">HOME / REGISTRATION</div>
     </div>
     <div class="registration-form-container">
-        <form class="registration-form" action="/register" method="post">
+        <form class="registration-form" action="/register" method="post" autocomplete="off">
             <label>
                 <input type="text" name="firstName" placeholder="First Name" required>
                 <span class="required">*</span>
@@ -69,7 +67,34 @@
             </label>
             <button type="submit" class="register-btn">CREATE</button>
         </form>
+        <div id="regMessage" style="color:#ff6b6b; text-align:center; margin:1em 0;"></div>
     </div>
 </main>
+
+<script>
+    // Password match check
+    document.querySelector('.registration-form').addEventListener('submit', function(e) {
+        const pw = this.password.value;
+        const cpw = this.confirmPassword.value;
+        if (pw !== cpw) {
+            alert("Passwords do not match!");
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // Show registration result message
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('registered') === 'success') {
+        document.getElementById('regMessage').textContent = "Registration successful! Please log in.";
+        document.getElementById('regMessage').style.color = "#28a745";
+    }
+    if (params.get('error') === 'exists') {
+        document.getElementById('regMessage').textContent = "This email is already registered.";
+    }
+    if (params.get('error') === 'system') {
+        document.getElementById('regMessage').textContent = "Registration failed due to a server error. Please try again.";
+    }
+</script>
 </body>
 </html>

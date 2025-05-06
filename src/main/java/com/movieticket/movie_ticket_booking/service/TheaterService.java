@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class TheaterService {
@@ -14,38 +15,92 @@ public class TheaterService {
     public TheaterService() {
         try {
             Files.createDirectories(Paths.get(THEATER_FILE).getParent());
+            if (!Files.exists(Paths.get(THEATER_FILE))) {
+                Files.createFile(Paths.get(THEATER_FILE));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public List<Theater> getAllTheaters() {
+    // Added method to get theater by ID
+    public Theater getTheaterById(String theaterId) throws IOException {
+        return getAllTheaters().stream()
+                .filter(t -> t.getId().equals(theaterId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public List<Theater> getAllTheaters() throws IOException {
         List<Theater> theaters = new ArrayList<>();
+        if (!Files.exists(Paths.get(THEATER_FILE))) return theaters;
 
-        try {
-            if (!Files.exists(Paths.get(THEATER_FILE))) {
-                return theaters;
-            }
-
-            try (BufferedReader reader = Files.newBufferedReader(Paths.get(THEATER_FILE))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    String[] parts = line.split("\\|");
-                    if (parts.length >= 3) {
-                        Theater theater = new Theater();
-                        theater.setId(parts[0]);
-                        theater.setName(parts[1]);
-                        theater.setLocation(parts[2]);
-                        theaters.add(theater);
-                    }
+        List<String> lines = Files.readAllLines(Paths.get(THEATER_FILE));
+        for (String line : lines) {
+            String[] parts = line.split("\\|");
+            if (parts.length >= 5) {
+                Theater theater = new Theater();
+                theater.setId(parts[0]);
+                theater.setName(parts[1]);
+                theater.setLocation(parts[2]);
+                theater.setTotalSeats(Integer.parseInt(parts[3]));
+                theater.setSeatRows(Integer.parseInt(parts[4]));
+                if (parts.length > 5 && !parts[5].isEmpty()) {
+                    theater.setMovieIds(Arrays.asList(parts[5].split(",")));
                 }
+                theaters.add(theater);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-
         return theaters;
     }
 
-    // Add other methods for CRUD operations as needed
+    public void addTheater(Theater theater) throws IOException {
+        theater.setId(UUID.randomUUID().toString());
+        List<Theater> theaters = getAllTheaters();
+        theaters.add(theater);
+        saveAllTheaters(theaters);
+    }
+
+    public void deleteTheater(String theaterId) throws IOException {
+        List<Theater> theaters = getAllTheaters().stream()
+                .filter(t -> !t.getId().equals(theaterId))
+                .collect(Collectors.toList());
+        saveAllTheaters(theaters);
+    }
+
+    public void addMovieToTheater(String theaterId, String movieId) throws IOException {
+        List<Theater> theaters = getAllTheaters();
+        for (Theater t : theaters) {
+            if (t.getId().equals(theaterId)) {
+                if (!t.getMovieIds().contains(movieId)) {
+                    t.getMovieIds().add(movieId);
+                }
+                break;
+            }
+        }
+        saveAllTheaters(theaters);
+    }
+
+    public List<Theater> getTheatersByMovieId(String movieId) throws IOException {
+        return getAllTheaters().stream()
+                .filter(t -> t.getMovieIds().contains(movieId))
+                .collect(Collectors.toList());
+    }
+
+    private void saveAllTheaters(List<Theater> theaters) throws IOException {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(THEATER_FILE))) {
+            for (Theater t : theaters) {
+                String movieIds = String.join(",", t.getMovieIds());
+                writer.write(String.join("|",
+                        t.getId(),
+                        t.getName(),
+                        t.getLocation(),
+                        String.valueOf(t.getTotalSeats()),
+                        String.valueOf(t.getSeatRows()),
+                        movieIds
+                ));
+                writer.newLine();
+            }
+        }
+    }
 }

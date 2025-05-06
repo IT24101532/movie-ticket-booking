@@ -3,32 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <title>Payment - Movie Vault</title>
-    <link rel="stylesheet" href="/css/payment.css">
+    <link rel="stylesheet" href="/css/common.css">
+    <style>
+        body { background: #0b0b1d; color: #fff; }
+        .payment-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #13132d;
+            border-radius: 10px;
+        }
+        .booking-summary {
+            padding: 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        .payment-form input, .payment-form select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: #2c2c54;
+            border: 1px solid #6c63ff;
+            color: #fff;
+            border-radius: 5px;
+        }
+        .pay-btn {
+            background: #6c63ff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 1rem;
+            transition: background 0.2s;
+        }
+        .pay-btn:hover {
+            background: #5952cc;
+        }
+    </style>
 </head>
 <body>
-<div class="navbar">
-    <span class="brand">MOVIE<br>VAULT</span>
-    <span class="nav-links">
-        <a href="/index.html">HOME</a>
-        <a href="/movies.html">MOVIES</a>
-        <a href="/login.html">LOGIN</a>
-    </span>
-</div>
-<div class="page-title">PAYMENT</div>
-<div class="breadcrumb">HOME / PAYMENT</div>
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="brand">
+        <span style="color: #fff;">MOVIE</span>
+        <span style="color: #fff;">VAULT</span>
+    </div>
+    <div class="nav-right" id="navRight"></div>
+</nav>
+
 <div class="payment-container">
-    <form class="payment-form" action="/api/payments" method="post">
-        <input type="text" name="bookingId" placeholder="Booking ID" required>
-        <input type="text" name="userId" placeholder="User ID" required>
-        <input type="number" name="amount" placeholder="Amount" required>
-        <select name="method" required>
-            <option value="">Select Payment Method</option>
-            <option value="Credit Card">Credit Card</option>
-            <option value="UPI">UPI</option>
-            <option value="Net Banking">Net Banking</option>
-        </select>
-        <button type="submit">Pay Now</button>
+    <h1>Payment Details</h1>
+
+    <div class="booking-summary">
+        <h3>Booking Summary</h3>
+        <p>Movie: <span id="summaryMovie"></span></p>
+        <p>Theater: <span id="summaryTheater"></span></p>
+        <p>Seats: <span id="summarySeats"></span></p>
+        <p>Total: Rs. <span id="summaryTotal"></span></p>
+    </div>
+
+    <form class="payment-form" id="paymentForm">
+        <input type="hidden" name="movieId" id="movieId">
+        <input type="hidden" name="theaterId" id="theaterId">
+        <input type="hidden" name="seatNumbers" id="seatNumbers">
+        <input type="hidden" name="totalAmount" id="totalAmount">
+
+        <div>
+            <label>Payment Method</label>
+            <select name="method" required>
+                <option value="">Select Payment Method</option>
+                <option value="Credit Card">Credit Card</option>
+                <option value="UPI">UPI</option>
+                <option value="Net Banking">Net Banking</option>
+            </select>
+        </div>
+
+        <button type="submit" class="pay-btn">Confirm Payment</button>
     </form>
 </div>
+
+<script>
+    // Enhanced payment handling
+    document.addEventListener('DOMContentLoaded', () => {
+        // Session check
+        if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = '/login.html';
+            return;
+        }
+
+        // Load booking details
+        const bookingDetails = JSON.parse(sessionStorage.getItem('bookingDetails') || '{}');
+
+        // Populate summary
+        document.getElementById('summaryMovie').textContent = bookingDetails.movieTitle || 'N/A';
+        document.getElementById('summaryTheater').textContent = bookingDetails.theaterName || 'N/A';
+        document.getElementById('summarySeats').textContent = bookingDetails.seatNumbers?.join(', ') || 'N/A';
+        document.getElementById('summaryTotal').textContent = bookingDetails.totalAmount || '0';
+
+        // Set hidden values
+        document.getElementById('movieId').value = bookingDetails.movieId || '';
+        document.getElementById('theaterId').value = bookingDetails.theaterId || '';
+        document.getElementById('seatNumbers').value = bookingDetails.seatNumbers?.join(',') || '';
+        document.getElementById('totalAmount').value = bookingDetails.totalAmount || '';
+    });
+
+    // Handle payment submission
+    document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new URLSearchParams(new FormData(e.target));
+
+        try {
+            const response = await fetch('/api/payments', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: formData
+            });
+
+            if (response.ok) {
+                // Clear temporary booking data
+                sessionStorage.removeItem('bookingDetails');
+                window.location.href = '/booking-confirmation.html';
+            } else {
+                const error = await response.text();
+                alert(`Payment failed: ${error}`);
+            }
+        } catch (error) {
+            console.error('Payment error:', error);
+            alert('Connection error. Please check your internet connection.');
+        }
+    });
+</script>
 </body>
 </html>

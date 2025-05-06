@@ -57,4 +57,13 @@ public class Booking {
     public void setTotalAmount(double totalAmount) {
         this.totalAmount = totalAmount;
     }
+    private String movieId;
+    private String theaterId;
+
+    public String getMovieId() { return movieId; }
+    public void setMovieId(String movieId) { this.movieId = movieId; }
+
+    public String getTheaterId() { return theaterId; }
+    public void setTheaterId(String theaterId) { this.theaterId = theaterId; }
+
 }

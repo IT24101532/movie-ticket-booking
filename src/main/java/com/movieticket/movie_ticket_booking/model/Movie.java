@@ -57,4 +57,5 @@ public class Movie {
 
     public String getEventType() { return eventType; }
     public void setEventType(String eventType) { this.eventType = eventType; }
+
 }

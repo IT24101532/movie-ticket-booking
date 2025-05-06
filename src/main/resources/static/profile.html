@@ -12,7 +12,6 @@
         <a href="/home.html">HOME</a>
         <a href="/login.html">LOGIN</a>
         <a href="/register.html">REGISTER</a>
-
     </span>
 </div>
 
@@ -51,5 +50,15 @@
         </tbody>
     </table>
 </div>
+
+<script>
+    // --- SESSION-BASED PROTECTION ---
+    // If not logged in, redirect to login page
+    if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+        window.location.href = '/login.html';
+    }
+
+    // You can add your JS here to load and display profile data
+</script>
 </body>
 </html>

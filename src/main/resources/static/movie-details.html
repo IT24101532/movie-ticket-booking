@@ -4,66 +4,167 @@
     <meta charset="UTF-8">
     <title>Movie Details - Movie Vault</title>
     <link rel="stylesheet" href="/css/movies.css">
-
     <style>
-        .movie-details-container {
-            max-width: 800px;
-            margin: 40px auto;
-            background: #F5C518;
-            border-radius: 12px;
-            box-shadow: 0 0 18px #0001;
-            padding: 32px;
-            display: flex;
-            gap: 32px;
-            align-items: flex-start;
+        body {
+            background: #0b0b1d;
+            color: #fff;
         }
-        .movie-details-poster {
+        .movie-details-container {
+            max-width: 900px;
+            margin: 30px auto;
+            background: #13132d;
+            border-radius: 10px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .movie-header {
+            display: flex;
+            gap: 30px;
+        }
+        .movie-poster {
             width: 300px;
             height: 450px;
             object-fit: cover;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
-        .movie-details-info {
+        .movie-info {
             flex: 1;
         }
-        .movie-details-info h2 {
-            margin-top: 0;
-            color: #222;
+        .movie-title {
+            font-size: 32px;
+            margin-bottom: 15px;
+            color: #fff;
         }
         .movie-meta {
-            color: #555;
-            margin-bottom: 16px;
+            color: #cd8c38;
+            margin-bottom: 20px;
         }
-        .movie-description {
+        .theater-selection {
+            background: rgba(0,0,0,0.2);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .select-btn {
+            background: #6c63ff;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: inline-block;
+            text-decoration: none;
             margin-top: 15px;
-            color: #333;
-            font-size: 1.1em;
+        }
+        .select-btn:hover {
+            background: #5952cc;
+        }
+        #theaterSelect {
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+            border: none;
+            margin: 10px 0;
+            background: #1c1c3a;
+            color: white;
         }
     </style>
 </head>
 <body>
-<div class="navbar">
-    <span>MOVIE VAULT</span>
-    <span>
-        <a href="/login.html">LOGIN</a>
-        <a href="/register.html">REGISTER</a>
-        <a href="/"><img src="/img/home.png" alt="Home" class="home-icon"></a>
-    </span>
-</div>
-<div class="page-title">MOVIE DETAILS</div>
-<div class="breadcrumb">HOME / MOVIE DETAILS</div>
+<!-- NAVBAR: Copy this from your main layout -->
+<nav style="background: #13132d; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between;">
+    <div style="font-size: 2rem; font-weight: bold; letter-spacing: 0.2em;">
+        <span style="display: block; color: #fff;">MOVIE</span>
+        <span style="display: block; color: #fff;">VAULT</span>
+    </div>
+    <div>
+        <a href="/" style="color: #fff; margin: 0 1rem;">HOME</a>
+        <a href="/movies.html" style="color: #fff; margin: 0 1rem;">MOVIES</a>
+        <a href="#" style="color: #fff; margin: 0 1rem;">DEALS AND EXCLUSIVES</a>
+        <a href="#" style="color: #fff; margin: 0 1rem;">ADVERTISE</a>
+        <a href="/buy-tickets.html" style="margin: 0 1rem; background: #6c63ff; color: #fff; padding: 0.5rem 1rem; border-radius: 6px; font-weight: bold; text-decoration: none;">BUY TICKETS</a>
+        <a href="/login.html" style="color: #fff; margin: 0 1rem;">LOGIN</a>
+    </div>
+</nav>
+
 <div class="movie-details-container">
-    <img src="" alt="Movie Poster" class="movie-details-poster" id="detailsPoster">
-    <div class="movie-details-info">
-        <h2 id="detailsTitle"></h2>
-        <div class="movie-meta">
-            <span id="detailsGenre"></span> |
-            <span id="detailsLanguage"></span> |
-            <span id="detailsReleaseDate"></span>
+    <div class="movie-header">
+        <img id="moviePoster" src="" alt="Movie Poster" class="movie-poster">
+        <div class="movie-info">
+            <h1 id="movieTitle" class="movie-title">Movie Title</h1>
+            <div class="movie-meta">
+                <span id="movieGenre">Genre</span> •
+                <span id="movieLanguage">Language</span> •
+                <span id="movieReleaseDate">Release Date</span>
+            </div>
+            <p id="movieDescription">Movie description will appear here.</p>
+
+            <div class="theater-selection">
+                <h3>Select a Theater</h3>
+                <select id="theaterSelect" required>
+                    <option value="">Loading theaters...</option>
+                </select>
+                <button id="continueBtn" class="select-btn">Continue to Seat Selection</button>
+            </div>
         </div>
-        <div class="movie-description" id="detailsDescription"></div>
     </div>
 </div>
+
+<script>
+    // --- SESSION-BASED PROTECTION ---
+    // If not logged in, redirect to login page
+    if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+        window.location.href = '/login.html';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const movieId = urlParams.get('id');
+
+        if(movieId) {
+            // Fetch movie details
+            fetch(`/api/movies/${movieId}`)
+                .then(res => res.json())
+                .then(movie => {
+                    document.getElementById('movieTitle').textContent = movie.title;
+                    document.getElementById('movieGenre').textContent = movie.genre;
+                    document.getElementById('movieLanguage').textContent = movie.language;
+                    document.getElementById('movieReleaseDate').textContent = movie.releaseDate;
+                    document.getElementById('movieDescription').textContent = movie.description;
+                    document.getElementById('moviePoster').src = movie.imagePath;
+                    document.title = `${movie.title} - Movie Vault`;
+                });
+
+            // Fetch theaters showing this movie
+            fetch(`/api/theaters?movieId=${movieId}`)
+                .then(res => res.json())
+                .then(theaters => {
+                    const theaterSelect = document.getElementById('theaterSelect');
+                    if (theaters.length === 0) {
+                        theaterSelect.innerHTML = '<option value="">No theaters available</option>';
+                    } else {
+                        theaterSelect.innerHTML = theaters.map(t =>
+                            `<option value="${t.id}">${t.name} - ${t.location}</option>`
+                        ).join('');
+                    }
+                });
+
+            // Continue button redirects to seat selection
+            document.getElementById('continueBtn').addEventListener('click', function() {
+                const theaterId = document.getElementById('theaterSelect').value;
+                if (!theaterId) {
+                    alert('Please select a theater');
+                    return;
+                }
+                window.location.href = `/select-seats.html?id=${movieId}&theaterId=${theaterId}`;
+            });
+        }
+    });
+</script>
 </body>
 </html>

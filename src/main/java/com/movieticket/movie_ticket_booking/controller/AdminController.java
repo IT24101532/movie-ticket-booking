@@ -1,51 +1,100 @@
 package com.movieticket.movie_ticket_booking.controller;
 
+import com.movieticket.movie_ticket_booking.model.Movie;
+import com.movieticket.movie_ticket_booking.model.User;
 import com.movieticket.movie_ticket_booking.service.MovieService;
-import com.movieticket.movie_ticket_booking.service.TheaterService;
-import com.movieticket.movie_ticket_booking.service.ShowtimeService;
-import com.movieticket.movie_ticket_booking.service.BookingService;
-import com.movieticket.movie_ticket_booking.service.ActivityService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Controller
+@RequestMapping("/admin")
 public class AdminController {
-    private final MovieService movieService;
-    private final TheaterService theaterService;
-    private final ShowtimeService showtimeService;
-    private final BookingService bookingService;
-    private final ActivityService activityService;
 
-    public AdminController(MovieService movieService,
-                           TheaterService theaterService,
-                           ShowtimeService showtimeService,
-                           BookingService bookingService,
-                           ActivityService activityService) {
+    private final MovieService movieService;
+
+    public AdminController(MovieService movieService) {
         this.movieService = movieService;
-        this.theaterService = theaterService;
-        this.showtimeService = showtimeService;
-        this.bookingService = bookingService;
-        this.activityService = activityService;
     }
 
-    @GetMapping("/admin")
-    public String adminDashboard(Model model) {
-        // Get counts from service classes
-        int movieCount = movieService.getAllMovies().size();
-        int theaterCount = theaterService.getAllTheaters().size();
-        int showtimeCount = showtimeService.getAllShowtimes().size();
-        int bookingCount = bookingService.getAllBookings().size();
+    @GetMapping
+    public String adminDashboard(HttpSession session, Model model) {
+        // Authentication check
+        User user = (User) session.getAttribute("user");
+        if (user == null || !"ADMIN".equalsIgnoreCase(user.getRole())) {
+            return "redirect:/login";
+        }
 
-        // Add counts to model
-        model.addAttribute("movieCount", movieCount);
-        model.addAttribute("theaterCount", theaterCount);
-        model.addAttribute("showtimeCount", showtimeCount);
-        model.addAttribute("bookingCount", bookingCount);
+        try {
+            model.addAttribute("movies", movieService.getAllMovies());
+            model.addAttribute("movieCount", movieService.getAllMovies().size());
+        } catch (Exception e) { // Changed from IOException to general Exception
+            model.addAttribute("error", "Error loading movies: " + e.getMessage());
+        }
+        return "admin-dashboard";
+    }
 
-        // Get recent activities
-        model.addAttribute("activities", activityService.getRecentActivities(5));
+    @PostMapping("/add-movie")
+    public String addMovie(
+            @RequestParam String title,
+            @RequestParam String genre,
+            @RequestParam String language,
+            @RequestParam String releaseDate,
+            @RequestParam String showTime,
+            @RequestParam String theater,
+            @RequestParam String description,
+            @RequestParam double price,
+            @RequestParam("imageFile") MultipartFile imageFile,
+            HttpSession session,
+            Model model) {
 
-        return "admin";
+        // Authentication check
+        User user = (User) session.getAttribute("user");
+        if (user == null || !"ADMIN".equalsIgnoreCase(user.getRole())) {
+            return "redirect:/login";
+        }
+
+        try {
+            Movie movie = new Movie();
+            movie.setTitle(title);
+            movie.setGenre(genre);
+            movie.setLanguage(language);
+            movie.setReleaseDate(LocalDate.parse(releaseDate));
+            movie.setShowTime(LocalTime.parse(showTime));
+            movie.setTheater(theater);
+            movie.setDescription(description);
+            movie.setPrice(price);
+
+            movieService.saveMovie(movie, imageFile);
+            return "redirect:/admin";
+
+        } catch (Exception e) {
+            model.addAttribute("error", "Error adding movie: " + e.getMessage());
+            return "admin-dashboard"; // Stay on same page to show error
+        }
+    }
+
+    @PostMapping("/delete-movie/{id}")
+    public String deleteMovie(
+            @PathVariable String id,
+            HttpSession session,
+            Model model) {
+
+        // Authentication check
+        User user = (User) session.getAttribute("user");
+        if (user == null || !"ADMIN".equalsIgnoreCase(user.getRole())) {
+            return "redirect:/login";
+        }
+
+        try {
+            movieService.deleteMovie(id);
+        } catch (Exception e) {
+            model.addAttribute("error", "Error deleting movie: " + e.getMessage());
+        }
+        return "redirect:/admin";
     }
 }

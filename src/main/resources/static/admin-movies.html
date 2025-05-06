@@ -4,42 +4,115 @@
     <meta charset="UTF-8">
     <title>Admin Movies - Movie Vault</title>
     <link rel="stylesheet" href="/css/admin-movies.css">
+    <style>
+        .movie-row {
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .delete-btn:hover {
+            background: #bb2d3b;
+        }
+    </style>
 </head>
 <body>
 <div class="navbar">
-    <span>MOVIE VAULT /  ADMIN</span>
+    <span>MOVIE VAULT / ADMIN</span>
     <span>
         <a href="/movies.html">VIEW MOVIES</a>
         <a href="/logout">LOGOUT</a>
     </span>
 </div>
+
 <div class="page-title">ADMIN MOVIE MANAGEMENT</div>
-<div class="breadcrumb">HOME / ADMIN / ADD A NEW MOVIE</div>
+<div class="breadcrumb">HOME / ADMIN / MOVIE MANAGEMENT</div>
+
 <div class="admin-movies-container">
     <h2>Add New Movie</h2>
     <form class="admin-movie-form" action="/admin/add-movie" method="post" enctype="multipart/form-data">
+        <!-- CSRF token, required if using Spring Security -->
+
+
         <input type="text" name="title" placeholder="Title" required>
         <input type="text" name="genre" placeholder="Genre" required>
         <input type="text" name="language" placeholder="Language" required>
         <input type="date" name="releaseDate" required>
+        <input type="time" name="showTime" required>
+        <input type="text" name="theater" placeholder="Theater" required>
+        <input type="number" name="price" placeholder="Price" step="0.01" required>
         <textarea name="description" placeholder="Description" required></textarea>
 
-        <!-- Image upload box -->
-        <label for="movieImage" style="font-weight:bold; margin-top:10px;">Movie Image:</label>
-        <input type="file" name="movieImage" id="movieImage" accept="image/*" style="margin-bottom:12px;" required>
+        <input type="hidden" name="eventType" value="Movie">
+
+        <label for="imageFile" style="font-weight:bold; margin-top:10px;">Movie Image:</label>
+        <input type="file" name="imageFile" id="imageFile" accept="image/*" style="margin-bottom:12px;" required>
 
         <button type="submit">Add Movie</button>
-        <button onclick="window.location.href='target-page.html'">Add Movie</button>
-
-
-
-
-
     </form>
+
+
     <h2>All Movies</h2>
     <div class="admin-movie-list" id="adminMovieList">
-        <!-- List of movies with edit/delete buttons goes here -->
+        <!-- Movies will be loaded here by JS -->
     </div>
 </div>
+
+<script>
+    // Load movies when page loads
+    window.addEventListener('DOMContentLoaded', () => {
+        loadMovies();
+    });
+
+    function loadMovies() {
+        fetch('/api/movies')
+            .then(res => res.json())
+            .then(movies => {
+                const movieList = document.getElementById('adminMovieList');
+                movieList.innerHTML = movies.map(movie => `
+                    <div class="movie-row">
+                        <div>
+                            <b>${movie.title}</b><br>
+                            <small>${movie.genre} • ${movie.language} • ${movie.releaseDate}</small>
+                        </div>
+                        <button class="delete-btn" onclick="deleteMovie('${movie.id}')">
+                            Delete
+                        </button>
+                    </div>
+                `).join('');
+            });
+    }
+
+    function deleteMovie(movieId) {
+        if(confirm("Are you sure you want to delete this movie permanently?")) {
+            fetch(`/api/movies/${movieId}`, { method: 'DELETE' })
+                .then(res => res.json())
+                .then(success => {
+                    if(success) {
+                        loadMovies(); // Refresh the list
+                    } else {
+                        alert("Failed to delete movie. Please try again.");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("An error occurred while deleting the movie.");
+                });
+        }
+    }
+</script>
 </body>
 </html>

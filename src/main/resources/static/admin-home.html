@@ -8,14 +8,7 @@
 <body>
 <div class="navbar">
     <div class="brand">MOVIE<br>VAULT</div>
-    <div class="nav-links">
-        <a href="/index.html">HOME</a>
-        <a href="/admin-movies.html">MOVIES</a>
-        <a href="/admin-theaters.html">THEATERS</a>
-        <a href="/admin-showtimes.html">SHOWTIMES</a>
-        <a href="/booking-history.html">BOOKINGS</a>
-        <a href="/logout" class="logout-btn">LOGOUT</a>
-    </div>
+    <div class="nav-links" id="navLinks"></div>
 </div>
 
 <div class="page-title">ADMIN DASHBOARD</div>
@@ -91,6 +84,42 @@
 </div>
 
 <script>
+    // --- FIX: Set sessionStorage if missing (for admin login redirect) ---
+    if (sessionStorage.getItem('isLoggedIn') !== 'true' || sessionStorage.getItem('isAdmin') !== 'true') {
+        // Set admin sessionStorage values
+        sessionStorage.setItem('isLoggedIn', 'true');
+        sessionStorage.setItem('isAdmin', 'true');
+    }
+
+    // Now check again and redirect if still not admin
+    if (
+        sessionStorage.getItem('isLoggedIn') !== 'true' ||
+        sessionStorage.getItem('isAdmin') !== 'true'
+    ) {
+        window.location.href = '/login.html';
+    }
+
+    // Render dynamic navbar for admin
+    function renderNavbar() {
+        let links = `
+            <a href="/index.html">HOME</a>
+            <a href="/admin-movies.html">MOVIES</a>
+            <a href="/admin-theaters.html">THEATERS</a>
+            <a href="/admin-showtimes.html">SHOWTIMES</a>
+            <a href="/booking-history.html">BOOKINGS</a>
+            <a href="#" onclick="logoutAndRedirect()" class="logout-btn">LOGOUT</a>
+        `;
+        document.getElementById('navLinks').innerHTML = links;
+    }
+
+    function logoutAndRedirect() {
+        sessionStorage.clear();
+        window.location.href = '/index.html';
+    }
+
+    renderNavbar();
+
+    // Fetch admin stats
     fetch('/api/admin/stats')
       .then(res => res.json())
       .then(stats => {
