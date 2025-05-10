@@ -64,7 +64,7 @@
         .select-btn:hover {
             background: #5952cc;
         }
-        #theaterSelect {
+        #theaterSelect, #showtimeSelect {
             padding: 10px;
             width: 100%;
             border-radius: 5px;
@@ -73,10 +73,14 @@
             background: #1c1c3a;
             color: white;
         }
+        #showtimeSelect:disabled {
+            background: #333;
+            color: #bbb;
+        }
     </style>
 </head>
 <body>
-<!-- NAVBAR: Copy this from your main layout -->
+<!-- NAVBAR -->
 <nav style="background: #13132d; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between;">
     <div style="font-size: 2rem; font-weight: bold; letter-spacing: 0.2em;">
         <span style="display: block; color: #fff;">MOVIE</span>
@@ -88,7 +92,7 @@
         <a href="#" style="color: #fff; margin: 0 1rem;">DEALS AND EXCLUSIVES</a>
         <a href="#" style="color: #fff; margin: 0 1rem;">ADVERTISE</a>
         <a href="/buy-tickets.html" style="margin: 0 1rem; background: #6c63ff; color: #fff; padding: 0.5rem 1rem; border-radius: 6px; font-weight: bold; text-decoration: none;">BUY TICKETS</a>
-        <a href="/login.html" style="color: #fff; margin: 0 1rem;">LOGIN</a>
+        <a href="#" onclick="logout()" style="color: #fff; margin: 0 1rem;">LOG OUT</a>
     </div>
 </nav>
 
@@ -109,6 +113,10 @@
                 <select id="theaterSelect" required>
                     <option value="">Loading theaters...</option>
                 </select>
+                <h3 style="margin-top:18px;">Select a Showtime</h3>
+                <select id="showtimeSelect" required disabled>
+                    <option value="">Select a theater first</option>
+                </select>
                 <button id="continueBtn" class="select-btn">Continue to Seat Selection</button>
             </div>
         </div>
@@ -117,7 +125,6 @@
 
 <script>
     // --- SESSION-BASED PROTECTION ---
-    // If not logged in, redirect to login page
     if (sessionStorage.getItem('isLoggedIn') !== 'true') {
         window.location.href = '/login.html';
     }
@@ -154,17 +161,53 @@
                     }
                 });
 
+            // When theater changes, fetch showtimes
+            document.getElementById('theaterSelect').addEventListener('change', function() {
+                const theaterId = this.value;
+                const showtimeSelect = document.getElementById('showtimeSelect');
+                if (!theaterId) {
+                    showtimeSelect.innerHTML = '<option value="">Select a theater first</option>';
+                    showtimeSelect.disabled = true;
+                    return;
+                }
+                fetch(`/api/showtimes?movieId=${movieId}&theaterId=${theaterId}`)
+                    .then(res => res.json())
+                    .then(showtimes => {
+                        if (!showtimes.length) {
+                            showtimeSelect.innerHTML = '<option value="">No showtimes available</option>';
+                            showtimeSelect.disabled = true;
+                        } else {
+                            showtimeSelect.innerHTML = showtimes.map(s =>
+                                `<option value="${s}">${s}</option>`
+                            ).join('');
+                            showtimeSelect.disabled = false;
+                        }
+                    });
+            });
+
             // Continue button redirects to seat selection
             document.getElementById('continueBtn').addEventListener('click', function() {
                 const theaterId = document.getElementById('theaterSelect').value;
+                const showTime = document.getElementById('showtimeSelect').value;
                 if (!theaterId) {
                     alert('Please select a theater');
                     return;
                 }
-                window.location.href = `/select-seats.html?id=${movieId}&theaterId=${theaterId}`;
+                if (!showTime) {
+                    alert('Please select a showtime');
+                    return;
+                }
+                window.location.href = `/select-seats.html?id=${movieId}&theaterId=${theaterId}&showTime=${encodeURIComponent(showTime)}`;
             });
         }
     });
+
+    function logout() {
+        sessionStorage.clear();
+        fetch('/logout', { method: 'POST' })
+            .then(() => window.location.href = '/')
+            .catch(() => window.location.href = '/');
+    }
 </script>
 </body>
 </html>

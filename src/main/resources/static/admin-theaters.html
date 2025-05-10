@@ -125,14 +125,10 @@
             <button type="submit" class="btn">Add Theater</button>
         </div>
     </form>
-    <h2>Assign Movie to Theater</h2>
-    <form action="/admin/assign-movie" method="post">
-        <div class="form-row">
-            <select id="theaterDropdown" name="theaterId" required></select>
-            <select id="movieDropdown" name="movieId" required></select>
-            <button type="submit" class="btn">Assign Movie</button>
-        </div>
-    </form>
+    <div style="margin-bottom: 24px;">
+        <a href="/assign-movie.html" class="btn">Assign Movie to Theater</a>
+    </div>
+
     <h2>Existing Theaters</h2>
     <div id="theaterList"></div>
 </div>

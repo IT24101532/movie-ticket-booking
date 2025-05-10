@@ -53,12 +53,19 @@
 
 <script>
     // --- SESSION-BASED PROTECTION ---
-    // If not logged in, redirect to login page
     if (sessionStorage.getItem('isLoggedIn') !== 'true') {
         window.location.href = '/login.html';
     }
 
-    // You can add your JS here to load and display profile data
+    // Fill in user details from sessionStorage (set these at login/registration)
+    document.getElementById('profileName').textContent = sessionStorage.getItem('userName') || 'User';
+    document.getElementById('profileEmail').textContent = sessionStorage.getItem('userEmail') || '';
+    document.getElementById('profileMobile').textContent = sessionStorage.getItem('userMobile') || '';
+    document.getElementById('profileGender').textContent = sessionStorage.getItem('userGender') || '';
+    document.getElementById('profileNic').textContent = sessionStorage.getItem('userNic') || '';
+    document.getElementById('profileAddress').textContent = sessionStorage.getItem('userAddress') || '';
+
+    // Optionally, you can fetch booking history via API and fill #bookingHistory here.
 </script>
 </body>
 </html>

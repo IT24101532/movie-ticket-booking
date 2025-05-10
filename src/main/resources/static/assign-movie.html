@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Assign Movie to Theater</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #0b0b1d;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background: #13132d;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .brand {
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 0.2em;
+            color: #fff;
+        }
+        .container {
+            max-width: 650px;
+            margin: 40px auto;
+            background: #13132d;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+            padding: 32px 28px 36px 28px;
+        }
+        h1 {
+            color: #ffd700; /* IMDb yellow */
+            margin-bottom: 28px;
+            font-size: 2.1rem;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            text-align: center;
+        }
+        .form-row {
+            display: flex;
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+        select {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1.5px solid #ffd700;
+            border-radius: 7px;
+            font-size: 1.05em;
+            background: #0b0b1d;
+            color: #fff;
+            outline: none;
+            transition: border 0.2s;
+        }
+        select:focus {
+            border-color: #fff700;
+        }
+        .btn {
+            background: #ffd700;
+            color: #13132d;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 1.05em;
+            font-weight: 600;
+            transition: background 0.2s, color 0.2s;
+        }
+        .btn:hover {
+            background: #fff700;
+            color: #0b0b1d;
+        }
+        #assignmentList {
+            margin-top: 32px;
+        }
+        .assignment-card {
+            background: #1c1c3a;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            padding: 16px 18px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .assignment-details {
+            font-size: 1.08em;
+        }
+        .assignment-details .highlight {
+            color: #ffd700;
+        }
+        .back-btn {
+            margin-bottom: 24px;
+            display: inline-block;
+            background: #23232f;
+            color: #ffd700;
+            border: 1.5px solid #ffd700;
+            padding: 9px 18px;
+            border-radius: 7px;
+            font-size: 1.05em;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.2s, color 0.2s;
+        }
+        .back-btn:hover {
+            background: #ffd700;
+            color: #23232f;
+        }
+        label {
+            color: #ffd700;
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: block;
+        }
+        option {
+            color: #fff;
+            background: #23232f;
+        }
+        @media (max-width: 600px) {
+            .container { padding: 16px 6px; }
+            .form-row { flex-direction: column; gap: 10px; }
+            h1 { font-size: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="brand">MOVIE VAULT</div>
+</nav>
+<div class="container">
+    <a href="/admin-home.html" class="back-btn">&larr; Back to Admin Dashboard</a>
+    <h1>Assign Movie to Theater</h1>
+    <form id="assignForm" action="/admin/assign-movie" method="post" autocomplete="off">
+        <div class="form-row">
+            <div style="flex:1;">
+                <label for="theaterDropdown">Theater</label>
+                <select id="theaterDropdown" name="theaterId" required disabled>
+                    <option value="">Loading theaters...</option>
+                </select>
+            </div>
+            <div style="flex:1;">
+                <label for="movieDropdown">Movie</label>
+                <select id="movieDropdown" name="movieId" required disabled>
+                    <option value="">Loading movies...</option>
+                </select>
+            </div>
+            <button type="submit" class="btn" id="assignBtn" disabled style="align-self: flex-end;">Assign Movie</button>
+        </div>
+    </form>
+    <div id="assignmentList">
+        <!-- Assigned movies to theaters will be shown here -->
+    </div>
+</div>
+<script>
+    let theatersLoaded = false;
+    let moviesLoaded = false;
+
+    // Populate dropdowns
+    window.onload = function() {
+        fetch('/api/all-theaters')
+            .then(res => res.json())
+            .then(theaters => {
+                const dropdown = document.getElementById('theaterDropdown');
+                dropdown.innerHTML = '<option value="">Select Theater</option>' +
+                    theaters.map(t =>
+                        `<option value="${t.id}">${t.name}</option>`
+                    ).join('');
+                dropdown.disabled = false;
+                theatersLoaded = true;
+                enableAssignButtonIfReady();
+            });
+        fetch('/api/movies')
+            .then(res => res.json())
+            .then(movies => {
+                const dropdown = document.getElementById('movieDropdown');
+                dropdown.innerHTML = '<option value="">Select Movie</option>' +
+                    movies.map(m =>
+                        `<option value="${m.id}">${m.title}</option>`
+                    ).join('');
+                dropdown.disabled = false;
+                moviesLoaded = true;
+                enableAssignButtonIfReady();
+            });
+        loadAssignments();
+    };
+
+    function enableAssignButtonIfReady() {
+        if (theatersLoaded && moviesLoaded) {
+            document.getElementById('assignBtn').disabled = false;
+        }
+    }
+
+    // Handle form submit (AJAX)
+    document.getElementById('assignForm').onsubmit = function(e) {
+        e.preventDefault();
+        const theaterId = document.getElementById('theaterDropdown').value;
+        const movieId = document.getElementById('movieDropdown').value;
+        if (!theaterId || !movieId) {
+            alert("Please select both a theater and a movie.");
+            return;
+        }
+        const data = new URLSearchParams(new FormData(this));
+        fetch('/admin/assign-movie', {
+            method: 'POST',
+            body: data,
+        })
+        .then(res => res.text())
+        .then(msg => {
+            if (msg.toLowerCase().includes('success')) {
+                loadAssignments();
+                this.reset();
+                alert('Movie assigned successfully!');
+            } else {
+                alert('Failed to assign movie: ' + msg);
+            }
+        })
+        .catch(() => {
+            alert('Failed to assign movie. Server error.');
+        });
+    };
+
+    // Load and display assignments (optional, requires backend support)
+    function loadAssignments() {
+        fetch('/api/movie-assignments')
+            .then(res => res.json())
+            .then(assignments => {
+                const list = document.getElementById('assignmentList');
+                if (!assignments.length) {
+                    list.innerHTML = "<div style='color:#888;'>No assignments yet.</div>";
+                    return;
+                }
+                list.innerHTML = assignments.map(a => `
+                    <div class="assignment-card">
+                        <div class="assignment-details">
+                            <span class="highlight">${a.movieTitle}</span> assigned to <span class="highlight">${a.theaterName}</span>
+                        </div>
+                    </div>
+                `).join('');
+            })
+            .catch(() => {
+                document.getElementById('assignmentList').innerHTML = "<div style='color:#888;'>Assignments not available.</div>";
+            });
+    }
+</script>
+</body>
+</html>

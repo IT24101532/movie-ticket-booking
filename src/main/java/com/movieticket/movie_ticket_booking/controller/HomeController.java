@@ -17,4 +17,5 @@ public class HomeController {
         // You might want to add authentication check here
         return "redirect:/admin/login.html";
     }
+
 }
