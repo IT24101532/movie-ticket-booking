@@ -23,7 +23,6 @@ public class TheaterService {
         }
     }
 
-    // Added method to get theater by ID
     public Theater getTheaterById(String theaterId) throws IOException {
         return getAllTheaters().stream()
                 .filter(t -> t.getId().equals(theaterId))
@@ -45,8 +44,11 @@ public class TheaterService {
                 theater.setLocation(parts[2]);
                 theater.setTotalSeats(Integer.parseInt(parts[3]));
                 theater.setSeatRows(Integer.parseInt(parts[4]));
+                // FIX: Always use a mutable ArrayList for movieIds
                 if (parts.length > 5 && !parts[5].isEmpty()) {
-                    theater.setMovieIds(Arrays.asList(parts[5].split(",")));
+                    theater.setMovieIds(new ArrayList<>(Arrays.asList(parts[5].split(","))));
+                } else {
+                    theater.setMovieIds(new ArrayList<>());
                 }
                 theaters.add(theater);
             }
@@ -72,6 +74,12 @@ public class TheaterService {
         List<Theater> theaters = getAllTheaters();
         for (Theater t : theaters) {
             if (t.getId().equals(theaterId)) {
+                // Defensive: ensure movieIds is always mutable
+                if (t.getMovieIds() == null) {
+                    t.setMovieIds(new ArrayList<>());
+                } else if (!(t.getMovieIds() instanceof ArrayList)) {
+                    t.setMovieIds(new ArrayList<>(t.getMovieIds()));
+                }
                 if (!t.getMovieIds().contains(movieId)) {
                     t.getMovieIds().add(movieId);
                 }

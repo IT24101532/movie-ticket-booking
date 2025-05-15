@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Assign Showtimes</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #0b0b1d;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background: #13132d;
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        .brand {
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 0.2em;
+            color: #fff;
+        }
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: #13132d;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+            padding: 32px 28px 36px 28px;
+        }
+        h1 {
+            color: #ffd700;
+            margin-bottom: 28px;
+            font-size: 2.1rem;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            text-align: center;
+        }
+        .assignment-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: #1c1c3a;
+            border-radius: 8px;
+            padding: 14px 12px;
+            margin-bottom: 18px;
+        }
+        .assignment-label {
+            flex: 2;
+        }
+        .assignment-label .highlight {
+            color: #ffd700;
+        }
+        .showtime-input {
+            flex: 1;
+            padding: 7px 10px;
+            border-radius: 5px;
+            border: 1.5px solid #ffd700;
+            background: #0b0b1d;
+            color: #fff;
+            font-size: 1em;
+        }
+        .btn {
+            background: #ffd700;
+            color: #13132d;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: background 0.2s, color 0.2s;
+        }
+        .btn:hover {
+            background: #fff700;
+            color: #0b0b1d;
+        }
+        .back-btn {
+            margin-bottom: 24px;
+            display: inline-block;
+            background: #23232f;
+            color: #ffd700;
+            border: 1.5px solid #ffd700;
+            padding: 9px 18px;
+            border-radius: 7px;
+            font-size: 1.05em;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.2s, color 0.2s;
+        }
+        .back-btn:hover {
+            background: #ffd700;
+            color: #23232f;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="brand">MOVIE VAULT</div>
+</nav>
+<div class="container">
+    <a href="/admin-home.html" class="back-btn">&larr; Back to Admin Dashboard</a>
+    <h1>Assign Showtimes</h1>
+    <div id="assignments"></div>
+</div>
+<script>
+    function loadAssignments() {
+        fetch('/api/movie-assignments')
+            .then(res => res.json())
+            .then(assignments => {
+                const container = document.getElementById('assignments');
+                if (!assignments.length) {
+                    container.innerHTML = "<div style='color:#888;'>No movie-theater assignments yet.</div>";
+                    return;
+                }
+                container.innerHTML = assignments.map((a, idx) => `
+                    <div class="assignment-row">
+                        <div class="assignment-label">
+                            <span class="highlight">${a.movieTitle}</span> at <span class="highlight">${a.theaterName}</span>
+                        </div>
+                        <input type="time" class="showtime-input" id="showtime-${idx}">
+                        <button class="btn" onclick="assignShowtime('${a.movieId}','${a.theaterId}', 'showtime-${idx}')">Assign Showtime</button>
+                    </div>
+                `).join('');
+            });
+    }
+
+    function assignShowtime(movieId, theaterId, inputId) {
+        const showTime = document.getElementById(inputId).value;
+        if (!showTime) {
+            alert("Please select a showtime.");
+            return;
+        }
+        fetch('/admin/assign-showtime', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: `movieId=${encodeURIComponent(movieId)}&theaterId=${encodeURIComponent(theaterId)}&showTime=${encodeURIComponent(showTime)}`
+        })
+        .then(res => res.text())
+        .then(msg => {
+            if (msg.toLowerCase().includes('success')) {
+                alert('Showtime assigned!');
+            } else {
+                alert('Failed to assign showtime: ' + msg);
+            }
+        })
+        .catch(() => alert('Server error while assigning showtime.'));
+    }
+
+    window.onload = loadAssignments;
+</script>
+</body>
+</html>

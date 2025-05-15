@@ -18,8 +18,12 @@
             font-size: 2rem;
             font-weight: bold;
             letter-spacing: 0.2em;
-            line-height: 1;
+            line-height: 1.1;
             color: #fff;
+        }
+        .brand span {
+            display: block;
+            line-height: 1.1;
         }
         .nav-center {
             display: flex;
@@ -44,7 +48,7 @@
             color: #6c63ff;
         }
         .welcome-message {
-            color: #6c63ff;
+            color: #ffd700;
             margin-right: 1.2rem;
             font-size: 1.1rem;
             font-weight: 500;
@@ -82,48 +86,49 @@
 <body style="background: #0b0b1d; color: #fff;">
 <nav class="navbar">
     <div class="brand">
-        <span>MOVIE</span><br>
+        <span>MOVIE</span>
         <span>VAULT</span>
     </div>
     <div class="nav-center">
         <a href="/" class="nav-link">HOME</a>
         <a href="/movies.html" class="nav-link">MOVIES</a>
-        <a href="#" class="nav-link">DEALS AND EXCLUSIVES</a>
+        <a href="#" class="nav-link">Deals And Exclusive</a>
         <!-- <a href="#" class="nav-link">ADVERTISE</a>  Uncomment if you want this -->
     </div>
     <div class="nav-right" id="navRight"></div>
 </nav>
 
+<div id="welcomeMessage" class="welcome-message" style="margin-left:2rem; margin-top:1rem;"></div>
+
 <main style="padding: 2rem;">
     <h1 style="color: #fff; margin-bottom: 2rem;">Now Showing</h1>
+    <label for="sortDropdown" style="color:#fff; margin-right:10px;">Sort by:</label>
+    <select id="sortDropdown" class="action-btn" style="margin-bottom:1.5rem;">
+        <option value="">Default Order</option>
+        <option value="releaseDate_asc">Release Date: Old to New</option>
+        <option value="releaseDate_desc">Release Date: New to Old</option>
+    </select>
+
     <div id="movieContainer" class="movie-grid"></div>
 </main>
-
 <script>
+    // Render navbar with profile and logout
     function renderNavbar() {
+        const navRight = document.getElementById('navRight');
         const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
-        const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
-        const userName = sessionStorage.getItem('userName') || '';
-
-        let rightNav = '';
-
-        if (isLoggedIn) {
-            rightNav = `
-                <span class="welcome-message">Welcome,<b>${userName}</b></span>
-                <a href="/buy-tickets.html" class="action-btn">BUY TICKETS</a>
-                ${isAdmin ?
-                    '<a href="/admin-home.html" class="nav-link">ADMIN DASHBOARD</a>' :
-                    '<a href="/profile.html" class="nav-link">PROFILE</a>'}
-                <a href="#" onclick="logout()" class="nav-link">LOGOUT</a>
+        const username = sessionStorage.getItem('userName');
+        navRight.innerHTML = '';
+        if (isLoggedIn && username) {
+            navRight.innerHTML = `
+                <span class="welcome-message">Welcome, <b>${username}</b></span>
+                <a href="/profile.html" class="action-btn">PROFILE</a>
+                <button class="action-btn" onclick="logout()">LOG OUT</button>
             `;
         } else {
-            rightNav = `
-                <a href="/login.html" class="nav-link">LOGIN</a>
-                <a href="/register.html" class="action-btn">REGISTER</a>
+            navRight.innerHTML = `
+                <a href="/login.html" class="action-btn">LOGIN</a>
             `;
         }
-
-        document.getElementById('navRight').innerHTML = rightNav;
     }
 
     function logout() {
@@ -133,41 +138,73 @@
             .catch(() => window.location.href = '/');
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        renderNavbar();
+    // Helper: render movies
+    function renderMovies(movies) {
+        const container = document.getElementById('movieContainer');
+        container.innerHTML = movies.map(movie => `
+            <div class="movie-card">
+                <img src="${movie.imagePath}" alt="${movie.title}" class="movie-poster">
+                <div class="movie-info">
+                    <h3>${movie.title}</h3>
+                    <p class="genre">${movie.genre} | ${movie.language}</p>
+                    <p class="release-date">${movie.releaseDate}</p>
+                    ${sessionStorage.getItem('isLoggedIn') === 'true' ?
+                        `<a href="/movie-details.html?id=${movie.id}" class="details-btn">View Details</a>` :
+                        `<button class="details-btn disabled" onclick="redirectToLogin(event)">Login to View</button>`}
+                </div>
+            </div>
+        `).join('');
+    }
 
-        fetch('/api/movies')
+    // Fetch and render movies (optionally sorted)
+    function loadMovies(sort = false, direction = 'asc') {
+        let url = '/api/movies';
+        if (sort) url = `/api/movies?sort=releaseDate&direction=${direction}`;
+        fetch(url)
             .then(response => {
                 if (!response.ok) throw new Error('Network error');
                 return response.json();
             })
-            .then(movies => {
-                const container = document.getElementById('movieContainer');
-                container.innerHTML = movies.map(movie => `
-                    <div class="movie-card">
-                        <img src="${movie.imagePath}" alt="${movie.title}" class="movie-poster">
-                        <div class="movie-info">
-                            <h3>${movie.title}</h3>
-                            <p class="genre">${movie.genre} | ${movie.language}</p>
-                            <p class="release-date">${movie.releaseDate}</p>
-                            ${sessionStorage.getItem('isLoggedIn') === 'true' ?
-                                `<a href="/movie-details.html?id=${movie.id}" class="details-btn">View Details</a>` :
-                                `<button class="details-btn disabled" onclick="redirectToLogin(event)">Login to View</button>`}
-                        </div>
-                    </div>
-                `).join('');
-            })
+            .then(movies => renderMovies(movies))
             .catch(error => {
                 document.getElementById('movieContainer').innerHTML =
                     '<p class="error-message">Error loading movies. Please try again later.</p>';
             });
+    }
+
+    // Show welcome message below navbar
+    function showWelcome() {
+        const username = sessionStorage.getItem('userName');
+        if (username) {
+            document.getElementById('welcomeMessage').innerHTML = `Welcome, <b>${username}</b>!`;
+        } else {
+            document.getElementById('welcomeMessage').innerHTML = '';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        renderNavbar();
+        showWelcome();
+        loadMovies();
+
+        document.getElementById('sortDropdown').addEventListener('change', function() {
+            const value = this.value;
+            if (value === "releaseDate_asc") {
+                loadMovies(true, 'asc');
+            } else if (value === "releaseDate_desc") {
+                loadMovies(true, 'desc');
+            } else {
+                loadMovies(false);
+            }
+        });
     });
 
-    function redirectToLogin(e) {
-        e.preventDefault();
-        alert('Please log in to view movie details.');
+    // Optional: redirect to login if not logged in
+    function redirectToLogin(event) {
+        event.preventDefault();
         window.location.href = '/login.html';
     }
 </script>
+
 </body>
 </html>

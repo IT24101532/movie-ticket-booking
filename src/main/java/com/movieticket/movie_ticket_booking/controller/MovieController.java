@@ -19,10 +19,26 @@ public class MovieController {
         this.movieService = movieService;
     }
 
+    // API: Get all movies (optionally sorted)
     @GetMapping("/api/movies")
     @ResponseBody
-    public List<Movie> getMoviesApi() {
-        return movieService.getAllMovies();
+    public List<Movie> getMoviesApi(
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "direction", required = false, defaultValue = "asc") String direction
+    ) {
+        if ("releaseDate".equals(sort)) {
+            boolean newestFirst = "desc".equalsIgnoreCase(direction);
+            return movieService.getAllMoviesSortedByReleaseDate(newestFirst);
+        } else {
+            return movieService.getAllMovies();
+        }
+    }
+
+    // API: Get a single movie by ID (for movie details page)
+    @GetMapping("/api/movies/{id}")
+    @ResponseBody
+    public Movie getMovieById(@PathVariable String id) throws IOException {
+        return movieService.getMovieById(id);
     }
 
     @GetMapping("/movies")
@@ -40,11 +56,9 @@ public class MovieController {
         return "movie-details";
     }
 
-
     @DeleteMapping("/api/movies/{movieId}")
     @ResponseBody
     public boolean deleteMovie(@PathVariable String movieId) throws IOException {
         return movieService.deleteMovie(movieId);
     }
-
 }

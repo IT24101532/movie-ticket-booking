@@ -36,15 +36,17 @@
         })
         .then(res => {
             if (res.redirected) {
-                // Set sessionStorage values for redirected logins (Spring MVC style)
+                // Set sessionStorage for redirected logins (Spring MVC style)
                 sessionStorage.setItem('isLoggedIn', 'true');
+                // Try to extract user/admin info from the URL or use defaults
                 if (res.url.includes('admin-home.html')) {
                     sessionStorage.setItem('isAdmin', 'true');
-                    sessionStorage.setItem('userName', 'Admin User');
+                    sessionStorage.setItem('userName', 'Admin');
                 } else {
                     sessionStorage.setItem('isAdmin', 'false');
-                    // You can improve this by fetching the user's name from a /api/me endpoint
-                    sessionStorage.setItem('userName', 'User');
+                    // Optionally, fetch user's name from an API or use email
+                    const email = form.elements['email'].value;
+                    sessionStorage.setItem('userName', email.split('@')[0]);
                 }
                 window.location.href = res.url;
                 return;
@@ -57,8 +59,7 @@
             if (result.success) {
                 sessionStorage.setItem('isLoggedIn', 'true');
                 sessionStorage.setItem('isAdmin', result.role === 'ADMIN' ? 'true' : 'false');
-                // Set the user's name from the backend response
-                sessionStorage.setItem('userName', result.userName || 'User');
+                sessionStorage.setItem('userName', result.userName || result.email || 'User');
                 window.location.href = result.role === 'ADMIN' ? '/admin-home.html' : '/movies.html';
             } else {
                 document.getElementById('loginError').textContent = 'Invalid email or password.';

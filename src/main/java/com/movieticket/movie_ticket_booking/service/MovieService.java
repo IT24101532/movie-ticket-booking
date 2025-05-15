@@ -116,6 +116,27 @@ public class MovieService {
         return movies;
     }
 
+    // Insertion Sort for movies by release date (ascending)
+    public List<Movie> getAllMoviesSortedByReleaseDate(boolean newestFirst) {
+        List<Movie> movies = getAllMovies();
+        // Insertion sort by releaseDate
+        for (int i = 1; i < movies.size(); i++) {
+            Movie key = movies.get(i);
+            int j = i - 1;
+            while (j >= 0 && (
+                    newestFirst
+                            ? movies.get(j).getReleaseDate().isBefore(key.getReleaseDate())
+                            : movies.get(j).getReleaseDate().isAfter(key.getReleaseDate())
+            )) {
+                movies.set(j + 1, movies.get(j));
+                j--;
+            }
+            movies.set(j + 1, key);
+        }
+        return movies;
+    }
+
+
     public Movie getMovieById(String id) {
         for (Movie movie : getAllMovies()) {
             if (movie.getId() != null && movie.getId().equals(id)) {
