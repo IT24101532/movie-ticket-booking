@@ -1,6 +1,0 @@
-6b42f77e-0780-40ce-8471-ea30898de697,lelum,maharshi,isthisperfevto24@gmail.com,Male,20000102030,02/33,kuruduwatta,matara,18193271,apple,USER
-b6fcfc9c-4170-42b9-8981-6e69e2cc865a,sandil,Mendiya,sandil@gmail.com,Male,200051053475,02/33,kuruduwatta,matara,74908765,sandil123,USER
-323b2294-14b5-4ab3-92cb-ef3216d64d0a,thavisha,jayathilake,thavisha@gmail.com,Male,20000345364,23, matara, ,12345234,thavisha123,USER
-d7be36d1-0c6f-4492-acba-b58e8ddb1e63,osanda,imendu,osanda@gmail.com,Male,123456789,wijethilakram road , walgama,18193272,osanda123,USER
-086d1696-4b9a-4d75-9160-fbcc898206b3,hasal,kenula,hasal@gmail.com,Male,200034252323,isadeentoen,19145356,hasal123,USER
-6ac93674-4abf-4157-b662-0aa887926808,ramika,vidmal,ramika@gmail.com,Male,200405523967,godagam matara,16546678,ramika123,USER
