@@ -1,0 +1,161 @@
+body {
+    margin: 0;
+    font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+    background: #17192b;
+    color: #f3f3f3;
+    min-height: 100vh;
+}
+
+.ad-navbar {
+    background: #1e2040;
+    padding: 1.2rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+}
+.ad-hero-logo {
+    width: 80px;
+    height: auto;
+    display: block;
+    margin: 2rem auto 1rem auto;
+    filter: drop-shadow(0 2px 8px #ffb30088);
+}
+
+
+.ad-logo {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #ffb300;
+    letter-spacing: 2px;
+}
+
+.ad-nav-links {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+}
+
+.ad-nav-links li a {
+    color: #f3f3f3;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.5rem 1.2rem;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+}
+
+.ad-nav-links li a.active,
+.ad-nav-links li a:hover {
+    background: #ffb300;
+    color: #1e2040;
+}
+
+.ad-main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+}
+
+.advertise-title {
+    text-align: center;
+    font-size: 2.7rem;
+    color: #ffb300;
+    margin-bottom: 2.5rem;
+    letter-spacing: 1px;
+    font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+    font-weight: bold;
+}
+
+.advertise-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2.5rem;
+    justify-content: center;
+}
+
+.advertise-card {
+    background: linear-gradient(135deg, #23233b 80%, #ffb300 120%);
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    width: 340px;
+    padding: 0 0 2rem 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+}
+.advertise-card:hover {
+    transform: translateY(-8px) scale(1.04);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+}
+
+.advertise-img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+    display: block;
+}
+
+.ad-ribbon {
+    position: absolute;
+    top: 16px;
+    left: -10px;
+    background: #ff5252;
+    color: #fff;
+    padding: 0.3rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border-radius: 5px;
+    transform: rotate(-15deg);
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.ad-ribbon.featured { background: #4f8cff; left: unset; right: -10px; }
+.ad-ribbon.new { background: #ffb300; color: #23233b; left
+.ad-success-box {
+    background: #23233b;
+    max-width: 400px;
+    margin: 5rem auto 0 auto;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+    padding: 2.5rem 2rem;
+    text-align: center;
+}
+.ad-success-box h2 {
+    color: #ffb300;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+.ad-success-box p {
+    color: #f3f3f3;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+.ad-tick {
+    font-size: 3.5rem;
+    color: #4f8cff;
+    margin-bottom: 2rem;
+}
+.ad-back-link {
+    color: #ffb300;
+    text-decoration: underline;
+    display: block;
+    margin-top: 1.2rem;
+    font-size: 1rem;
+}
+.ad-hero-desc {
+    text-align: center !important;
+    color: #fff7e6;
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    display: block;
+    width: 100%;
+}
