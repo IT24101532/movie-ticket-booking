@@ -1,0 +1,209 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #18181a;
+    color: #fff;
+}
+
+.navbar {
+    background: #22223b;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #ffd600;
+    letter-spacing: 2px;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links li a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.nav-links li a.active,
+.nav-links li a:hover {
+    background: #ffd600;
+    color: #22223b;
+}
+
+main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+}
+
+.deals-title {
+    text-align: center;
+    font-size: 2.5rem;
+    color: #ffd600;
+    margin-bottom: 2.5rem;
+    letter-spacing: 1px;
+}
+
+.deals-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+}
+
+.deal-card {
+    background: #23233b;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+    width: 340px;
+    padding: 0 0 2rem 0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.deal-card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-top-left-radius: 18px;
+    border-top-right-radius: 18px;
+}
+
+.ribbon {
+    position: absolute;
+    top: 12px;
+    left: -10px;
+    background: #ff5252;
+    color: #fff;
+    padding: 0.3rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border-radius: 5px;
+    transform: rotate(-15deg);
+    z-index: 2;
+}
+.ribbon.popular { background: #ffd600; color: #22223b; left: unset; right: -10px; }
+.ribbon.family { background: #6c63ff; left: unset; right: -10px; }
+
+.deal-card h2 {
+    margin: 1.2rem 0 0.5rem 0;
+    color: #ffd600;
+    font-size: 1.3rem;
+    font-weight: bold;
+    text-align: left;
+    width: 90%;
+}
+
+.deal-card p {
+    margin: 0 0 0.7rem 0;
+    font-size: 1.05rem;
+    width: 90%;
+    color: #fff;
+}
+
+.code-section {
+    background: #18181a;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    margin: 0.5rem 0 0.6rem 0;
+    width: 90%;
+    text-align: left;
+    font-size: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.use-code {
+    color: #ffd600;
+    font-weight: 500;
+}
+
+.code {
+    font-family: monospace;
+    background: #23233b;
+    color: #fff;
+    padding: 0.2rem 0.7rem;
+    border-radius: 5px;
+    font-size: 1.05rem;
+    font-weight: bold;
+}
+
+.deal-desc {
+    color: #bcbcbc;
+    font-size: 0.95rem;
+    margin-bottom: 1.1rem;
+    width: 90%;
+}
+
+.claim-btn {
+    background: #ffd600;
+    color: #18181a;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 7px;
+    font-size: 1.12rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 0.8rem;
+    transition: background 0.2s, color 0.2s;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.claim-btn:hover {
+    background: #fff;
+    color: #22223b;
+}
+
+.offer-claimed-box {
+    background: #23233b;
+    max-width: 400px;
+    margin: 5rem auto 0 auto;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+    padding: 2.5rem 2rem;
+    text-align: center;
+}
+
+.offer-claimed-box h2 {
+    color: #ffd600;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.offer-claimed-box p {
+    color: #fff;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.tick {
+    font-size: 3.5rem;
+    color: #6c63ff;
+    margin-bottom: 2rem;
+}
+
+.back-link {
+    color: #ffd600;
+    text-decoration: underline;
+    display: block;
+    margin-top: 1.2rem;
+    font-size: 1rem;
+}

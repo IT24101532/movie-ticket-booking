@@ -66,7 +66,7 @@ public class MovieService {
 
     private String saveImage(MultipartFile imageFile) throws IOException {
         if (imageFile == null || imageFile.isEmpty()) {
-            return "/img/default-movie.jpg";
+            return "/static/img/default-movie.jpg";
         }
 
         String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename().replace(" ", "_");
