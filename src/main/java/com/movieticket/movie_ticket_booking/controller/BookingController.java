@@ -28,82 +28,28 @@ public class BookingController {
         this.theaterService = theaterService;
     }
 
-    // DTO for booking history card
-    public static class BookingHistoryDTO {
-        public String bookingId;
-        public String movieTitle;
-        public String theaterName;
-        public String showDateTime;
-        public String seats;
-        public String total;
-        public String status; // "UPCOMING" or "PAST"
-    }
+    // ... existing DTO and other methods ...
 
-    @GetMapping("/booking-history")
-    public String showBookingHistoryPage(HttpSession session) {
-        if (session.getAttribute("user") == null) {
-            return "redirect:/login";
-        }
-        return "booking-history.html";
-    }
-
-    @GetMapping("/api/bookings")
+    // NEW: Endpoint for all-time occupied seats (ignores showtime)
+    @GetMapping("/api/bookings/all-occupied-seats")
     @ResponseBody
-    public List<BookingHistoryDTO> getUserBookings(HttpSession session) throws IOException {
-        User user = (User) session.getAttribute("user");
-        if (user == null) return List.of();
-
-        // Load all movies and theaters into maps for quick lookup
-        Map<String, Movie> movieMap = new HashMap<>();
-        for (Movie m : movieService.getAllMovies()) {
-            movieMap.put(m.getId(), m);
-        }
-        Map<String, Theater> theaterMap = new HashMap<>();
-        for (Theater t : theaterService.getAllTheaters()) {
-            theaterMap.put(t.getId(), t);
-        }
-
-        List<Booking> bookings = bookingService.getBookingsByUser(user.getId());
-        List<BookingHistoryDTO> dtoList = new ArrayList<>();
-
-        for (Booking b : bookings) {
-            BookingHistoryDTO dto = new BookingHistoryDTO();
-            dto.bookingId = b.getId();
-            // Get movie and theater names (fallback to ID if missing)
-            dto.movieTitle = movieMap.containsKey(b.getMovieId()) ? movieMap.get(b.getMovieId()).getTitle() : b.getMovieId();
-            dto.theaterName = theaterMap.containsKey(b.getTheaterId()) ? theaterMap.get(b.getTheaterId()).getName() : b.getTheaterId();
-            dto.showDateTime = formatShowDateTime(b.getShowDateTime());
-            dto.seats = b.getSeats();
-            dto.total = String.valueOf(b.getTotal());
-            dto.status = isPast(b.getShowDateTime()) ? "PAST" : "UPCOMING";
-            dtoList.add(dto);
-        }
-        // Optionally sort by showDateTime descending (most recent first)
-        dtoList.sort(Comparator.comparing((BookingHistoryDTO d) -> d.showDateTime).reversed());
-        return dtoList;
+    public List<String> getAllTimeOccupiedSeats(
+            @RequestParam String movieId,
+            @RequestParam String theaterId
+    ) throws IOException {
+        return bookingService.getAllTimeOccupiedSeats(movieId, theaterId);
     }
 
-    // Helper to format showDateTime for display
-    private String formatShowDateTime(String showDateTime) {
-        try {
-            // Assuming showDateTime is in ISO_LOCAL_DATE_TIME format
-            LocalDateTime dt = LocalDateTime.parse(showDateTime.split("\\.")[0]);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d, yyyy - h:mm a");
-            return dt.format(formatter);
-        } catch (Exception e) {
-            return showDateTime;
-        }
+    // Existing endpoint for specific showtime
+    @GetMapping("/api/bookings/seats")
+    @ResponseBody
+    public List<String> getOccupiedSeats(
+            @RequestParam String movieId,
+            @RequestParam String theaterId,
+            @RequestParam String showtime
+    ) throws IOException {
+        return bookingService.getOccupiedSeats(movieId, theaterId, showtime);
     }
 
-    // Helper to determine if a show is in the past
-    private boolean isPast(String showDateTime) {
-        try {
-            LocalDateTime dt = LocalDateTime.parse(showDateTime.split("\\.")[0]);
-            return dt.isBefore(LocalDateTime.now());
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    // ... (other endpoints, e.g. booking confirmation, cancel, etc. remain unchanged) ...
+    // ... rest of your existing code ...
 }

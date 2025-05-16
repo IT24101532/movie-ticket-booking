@@ -57,15 +57,56 @@
         window.location.href = '/login.html';
     }
 
-    // Fill in user details from sessionStorage (set these at login/registration)
-    document.getElementById('profileName').textContent = sessionStorage.getItem('userName') || 'User';
-    document.getElementById('profileEmail').textContent = sessionStorage.getItem('userEmail') || '';
-    document.getElementById('profileMobile').textContent = sessionStorage.getItem('userMobile') || '';
-    document.getElementById('profileGender').textContent = sessionStorage.getItem('userGender') || '';
-    document.getElementById('profileNic').textContent = sessionStorage.getItem('userNic') || '';
-    document.getElementById('profileAddress').textContent = sessionStorage.getItem('userAddress') || '';
+    // --- Fetch and fill user profile info dynamically ---
+    fetch('/api/user/profile')
+        .then(res => res.json())
+        .then(user => {
+            document.getElementById('profileName').textContent = user.name || '';
+            document.getElementById('profileEmail').textContent = user.email || '';
+            document.getElementById('profileMobile').textContent = user.mobile || '';
+            document.getElementById('profileGender').textContent = user.gender || '';
+            document.getElementById('profileNic').textContent = user.nic || '';
+            document.getElementById('profileAddress').textContent = user.address || '';
+            // Optionally update avatar if you have user.avatar
+            // document.getElementById('profileAvatar').src = user.avatar || '/img/avatar.png';
+        })
+        .catch(() => {
+            // fallback if API fails
+            document.getElementById('profileName').textContent = sessionStorage.getItem('userName') || 'User';
+            document.getElementById('profileEmail').textContent = sessionStorage.getItem('userEmail') || '';
+            document.getElementById('profileMobile').textContent = sessionStorage.getItem('userMobile') || '';
+            document.getElementById('profileGender').textContent = sessionStorage.getItem('userGender') || '';
+            document.getElementById('profileNic').textContent = sessionStorage.getItem('userNic') || '';
+            document.getElementById('profileAddress').textContent = sessionStorage.getItem('userAddress') || '';
+        });
 
-    // Optionally, you can fetch booking history via API and fill #bookingHistory here.
+    // --- Fetch and fill booking history dynamically ---
+    fetch('/api/bookings')
+        .then(res => res.json())
+        .then(bookings => {
+            const tbody = document.getElementById('bookingHistory');
+            tbody.innerHTML = '';
+            if (!bookings || bookings.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#ccc;">No bookings found.</td></tr>';
+                return;
+            }
+            bookings.forEach(b => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${b.movieTitle || ''}</td>
+                    <td>${b.showDateTime || ''}</td>
+                    <td>${b.theaterName || ''}</td>
+                    <td>${b.seats || ''}</td>
+                    <td>${b.status || ''}</td>
+                    <td>${b.bookingId ? `<a href="/ticket.html?id=${b.bookingId}" target="_blank">View</a>` : ''}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        })
+        .catch(() => {
+            document.getElementById('bookingHistory').innerHTML =
+                '<tr><td colspan="6" style="text-align:center;color:#ccc;">Failed to load booking history.</td></tr>';
+        });
 </script>
 </body>
 </html>
