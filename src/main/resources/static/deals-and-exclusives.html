@@ -2,143 +2,62 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Deals & Exclusives - Movie Vault</title>
-    <link rel="stylesheet" href="/css/common.css">
-    <style>
-        body { background: #0b0b1d; color: #fff; }
-        .deals-container {
-            max-width: 700px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: #13132d;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px #0004;
-        }
-        h1, h2 { color: #6c63ff; margin-bottom: 1rem; }
-        .deal-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-        .deal-card {
-            background: #23235a;
-            border-radius: 8px;
-            padding: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 8px #1112;
-        }
-        .deal-info h3 {
-            margin: 0 0 0.5rem 0;
-            color: #fff;
-            font-size: 1.2rem;
-        }
-        .deal-info p {
-            margin: 0;
-            color: #b3b3ff;
-        }
-        .deal-code-box {
-            background: #6c63ff;
-            color: #fff;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            font-family: monospace;
-            font-size: 1.1rem;
-            margin-right: 1rem;
-            letter-spacing: 1px;
-        }
-        .copy-btn {
-            background: #fff;
-            color: #6c63ff;
-            border: none;
-            border-radius: 4px;
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s, color 0.2s;
-        }
-        .copy-btn.copied {
-            background: #6c63ff;
-            color: #fff;
-        }
-        @media (max-width: 600px) {
-            .deal-card { flex-direction: column; align-items: flex-start; }
-            .deal-code-box { margin-bottom: 0.5rem; }
-        }
-    </style>
+    <title>Deals & Exclusives | Movie Vault</title>
+    <link rel="stylesheet" href="css/deals.css">
 </head>
 <body>
 <nav class="navbar">
-    <div class="brand">
-        <span style="color: #fff;">MOVIE</span>
-        <span style="color: #fff;">VAULT</span>
-    </div>
-    <div class="nav-right" id="navRight"></div>
+    <div class="logo">MOVIE VAULT</div>
+    <ul class="nav-links">
+        <li><a href="index.html">HOME</a></li>
+        <li><a href="movies.html">MOVIES</a></li>
+        <li><a href="deals-and-exclusives.html" class="active">DEALS & EXCLUSIVES</a></li>
+        <li><a href="login.html">LOGIN</a></li>
+    </ul>
 </nav>
-
-<div class="deals-container">
-    <h1>Deals & Exclusives</h1>
-    <p style="color:#b3b3ff; margin-bottom:2rem;">Copy a code and use it on the payment page to get instant discounts!</p>
-    <div class="deal-list">
+<main>
+    <h1 class="deals-title"><span>🔥</span> Exclusive Movie Deals</h1>
+    <div class="deals-container">
+        <!-- Deal Card 1 -->
         <div class="deal-card">
-            <div class="deal-info">
-                <h3>🎉 New Customer Offer</h3>
-                <p>Get <b>25% OFF</b> on your first booking.</p>
+            <img src="img/projector.jpg" alt="Weekend Madness">
+            <div class="ribbon hot">HOT DEAL</div>
+            <h2>Weekend Madness!</h2>
+            <p>50% OFF on all weekend shows with VISA cards</p>
+            <div class="code-section">
+                <span class="use-code">Use Code:</span>
+                <span class="code">WEEKEND50</span>
             </div>
-            <div>
-                <span class="deal-code-box" id="code1">NEW25</span>
-                <button class="copy-btn" data-code="NEW25">Copy</button>
-            </div>
+            <div class="deal-desc">Valid Friday-Sunday. Maximum discount Rs.500.</div>
+            <button class="claim-btn" onclick="window.location.href='offer-claimed.html'">CLAIM OFFER</button>
         </div>
+        <!-- Deal Card 2 -->
         <div class="deal-card">
-            <div class="deal-info">
-                <h3>👨‍👩‍👧‍👦 Family Pack</h3>
-                <p>Book <b>4 or more seats</b> and get <b>20% OFF</b>.</p>
+            <img src="img/students.jpg" alt="Student Special">
+            <div class="ribbon popular">POPULAR</div>
+            <h2>Student Special</h2>
+            <p>40% discount for students on all movies</p>
+            <div class="code-section">
+                <span class="use-code">Use Code:</span>
+                <span class="code">STUDENT40</span>
             </div>
-            <div>
-                <span class="deal-code-box" id="code2">FAMILY20</span>
-                <button class="copy-btn" data-code="FAMILY20">Copy</button>
-            </div>
+            <div class="deal-desc">Valid ID required at venue. Monday-Thursday only.</div>
+            <button class="claim-btn" onclick="window.location.href='offer-claimed.html'">CLAIM OFFER</button>
         </div>
+        <!-- Deal Card 3 -->
         <div class="deal-card">
-            <div class="deal-info">
-                <h3>🍿 Weekend Special</h3>
-                <p>Enjoy <b>15% OFF</b> for shows on Friday, Saturday, or Sunday!</p>
+            <img src="img/popcorn.jpg" alt="Family Pack">
+            <div class="ribbon family">FAMILY</div>
+            <h2>Family Pack</h2>
+            <p>4 tickets + 2 popcorn combos for just Rs.1999</p>
+            <div class="code-section">
+                <span class="use-code">Use Code:</span>
+                <span class="code">FAMILY999</span>
             </div>
-            <div>
-                <span class="deal-code-box" id="code3">WEEKEND15</span>
-                <button class="copy-btn" data-code="WEEKEND15">Copy</button>
-            </div>
-        </div>
-        <div class="deal-card">
-            <div class="deal-info">
-                <h3>💳 Card Holder Bonus</h3>
-                <p>Use your credit card and apply <b>10% OFF</b> with this code.</p>
-            </div>
-            <div>
-                <span class="deal-code-box" id="code4">CARD10</span>
-                <button class="copy-btn" data-code="CARD10">Copy</button>
-            </div>
+            <div class="deal-desc">Available for morning shows only.</div>
+            <button class="claim-btn" onclick="window.location.href='offer-claimed.html'">CLAIM OFFER</button>
         </div>
     </div>
-</div>
-
-<script>
-    // Copy code to clipboard and show feedback
-    document.querySelectorAll('.copy-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const code = btn.getAttribute('data-code');
-            navigator.clipboard.writeText(code);
-            btn.textContent = 'Copied!';
-            btn.classList.add('copied');
-            setTimeout(() => {
-                btn.textContent = 'Copy';
-                btn.classList.remove('copied');
-            }, 1200);
-        });
-    });
-</script>
+</main>
 </body>
 </html>
-
