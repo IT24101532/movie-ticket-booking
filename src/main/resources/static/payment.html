@@ -43,6 +43,59 @@
         .pay-btn:hover {
             background: #5952cc;
         }
+        .promo-section {
+            margin-bottom: 1.5rem;
+        }
+        .promo-input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        #promoCode {
+            flex: 1;
+            padding: 12px;
+            background: #2c2c54;
+            border: 1px solid #6c63ff;
+            color: #fff;
+            border-radius: 5px;
+        }
+        #applyPromo {
+            background: #6c63ff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #promoMessage {
+            min-height: 20px;
+            font-size: 0.9rem;
+        }
+        .promo-success {
+            color: #4CAF50;
+        }
+        .promo-error {
+            color: #f44336;
+        }
+        .applied-promo {
+            background: rgba(108, 99, 255, 0.2);
+            padding: 8px;
+            border-radius: 5px;
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .remove-promo {
+            background: none;
+            border: none;
+            color: #f44336;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        .discount-row {
+            color: #4CAF50;
+        }
     </style>
 </head>
 <body>
@@ -62,13 +115,30 @@
         <h3>Booking Summary</h3>
         <p>Movie: <span id="summaryMovie"></span></p>
         <p>Theater: <span id="summaryTheater"></span></p>
+        <p>Showtime: <span id="summaryShowtime"></span></p>
         <p>Seats: <span id="summarySeats"></span></p>
+        <div id="discountDisplay"></div>
         <p>Total: Rs. <span id="summaryTotal"></span></p>
     </div>
 
     <form class="payment-form" id="paymentForm">
+        <!-- Promo Code Section -->
+        <div class="promo-section">
+            <label>Promo Code</label>
+            <div class="promo-input-group">
+                <input type="text" id="promoCode" placeholder="Enter promo code">
+                <button type="button" id="applyPromo">Apply</button>
+            </div>
+            <div id="promoMessage"></div>
+            <div id="appliedPromo" class="applied-promo" style="display: none;">
+                <span id="appliedPromoText"></span>
+                <button type="button" class="remove-promo" id="removePromo">×</button>
+            </div>
+        </div>
+
         <input type="hidden" name="movieId" id="movieId">
         <input type="hidden" name="theaterId" id="theaterId">
+        <input type="hidden" name="showDateTime" id="showDateTime">
         <input type="hidden" name="seatNumbers" id="seatNumbers">
         <input type="hidden" name="totalAmount" id="totalAmount">
 
@@ -87,9 +157,7 @@
 </div>
 
 <script>
-    // Enhanced payment handling
-    document.addEventListener('DOMContentLoaded', () => {
-        // Session check
+    document.addEventListener('DOMContentLoaded', async () => {
         if (sessionStorage.getItem('isLoggedIn') !== 'true') {
             window.location.href = '/login.html';
             return;
@@ -97,45 +165,152 @@
 
         // Load booking details
         const bookingDetails = JSON.parse(sessionStorage.getItem('bookingDetails') || '{}');
+        let originalTotal = parseFloat(bookingDetails.totalAmount) || 0;
+        let currentDiscount = 0;
+        let appliedPromoCode = '';
+        let discountAmount = 0;
 
-        // Populate summary
-        document.getElementById('summaryMovie').textContent = bookingDetails.movieTitle || 'N/A';
-        document.getElementById('summaryTheater').textContent = bookingDetails.theaterName || 'N/A';
-        document.getElementById('summarySeats').textContent = bookingDetails.seatNumbers?.join(', ') || 'N/A';
-        document.getElementById('summaryTotal').textContent = bookingDetails.totalAmount || '0';
+        // Promo code configuration
+        const promoCodes = {
+            'FAMILY20': { discount: 0.20, description: 'Family Pack (20% off)' },
+            'NEW25': { discount: 0.25, description: 'New Customer (25% off)' },
+            'WEEKEND15': { discount: 0.15, description: 'Weekend Special (15% off)' }
+        };
 
-        // Set hidden values
-        document.getElementById('movieId').value = bookingDetails.movieId || '';
-        document.getElementById('theaterId').value = bookingDetails.theaterId || '';
-        document.getElementById('seatNumbers').value = bookingDetails.seatNumbers?.join(',') || '';
-        document.getElementById('totalAmount').value = bookingDetails.totalAmount || '';
-    });
+        // Initialize UI
+        const initializeUI = () => {
+            let movieTitle = bookingDetails.movieTitle || '';
+            let theaterName = bookingDetails.theaterName || '';
+            const showDateTime = bookingDetails.showDateTime || bookingDetails.showtime || '';
 
-    // Handle payment submission
-    document.getElementById('paymentForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const formData = new URLSearchParams(new FormData(e.target));
-
-        try {
-            const response = await fetch('/api/payments', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: formData
-            });
-
-            if (response.ok) {
-                // Clear temporary booking data
-                sessionStorage.removeItem('bookingDetails');
-                window.location.href = '/booking-confirmation.html';
+            if (!movieTitle && bookingDetails.movieId) {
+                fetch(`/api/movies/${bookingDetails.movieId}`)
+                    .then(res => res.json())
+                    .then(movie => {
+                        movieTitle = movie.title || '';
+                        document.getElementById('summaryMovie').textContent = movieTitle || 'N/A';
+                    });
             } else {
-                const error = await response.text();
-                alert(`Payment failed: ${error}`);
+                document.getElementById('summaryMovie').textContent = movieTitle || 'N/A';
             }
-        } catch (error) {
-            console.error('Payment error:', error);
-            alert('Connection error. Please check your internet connection.');
-        }
+
+            if (!theaterName && bookingDetails.theaterId) {
+                fetch(`/api/theaters/${bookingDetails.theaterId}`)
+                    .then(res => res.json())
+                    .then(theater => {
+                        theaterName = theater.name || '';
+                        document.getElementById('summaryTheater').textContent = theaterName || 'N/A';
+                    });
+            } else {
+                document.getElementById('summaryTheater').textContent = theaterName || 'N/A';
+            }
+
+            document.getElementById('summaryShowtime').textContent = showDateTime || 'N/A';
+            document.getElementById('summarySeats').textContent = bookingDetails.seatNumbers || 'N/A';
+            document.getElementById('summaryTotal').textContent = originalTotal.toFixed(0);
+
+            document.getElementById('movieId').value = bookingDetails.movieId || '';
+            document.getElementById('theaterId').value = bookingDetails.theaterId || '';
+            document.getElementById('showDateTime').value = showDateTime;
+            document.getElementById('seatNumbers').value = bookingDetails.seatNumbers || '';
+            document.getElementById('totalAmount').value = originalTotal.toFixed(0);
+        };
+
+        // Apply promo code logic
+        document.getElementById('applyPromo').addEventListener('click', () => {
+            const code = document.getElementById('promoCode').value.trim().toUpperCase();
+            const promoMessage = document.getElementById('promoMessage');
+            const appliedPromo = document.getElementById('appliedPromo');
+            const discountDisplay = document.getElementById('discountDisplay');
+
+            if (!code) {
+                promoMessage.innerHTML = '<span class="promo-error">Please enter a promo code</span>';
+                return;
+            }
+
+            if (promoCodes[code]) {
+                currentDiscount = promoCodes[code].discount;
+                appliedPromoCode = code;
+                discountAmount = originalTotal * currentDiscount;
+                const newTotal = originalTotal - discountAmount;
+
+                document.getElementById('summaryTotal').textContent = newTotal.toFixed(0);
+                document.getElementById('totalAmount').value = newTotal.toFixed(0);
+
+                document.getElementById('appliedPromoText').textContent =
+                    `${promoCodes[code].description} (-Rs.${discountAmount.toFixed(0)})`;
+                appliedPromo.style.display = 'flex';
+                promoMessage.innerHTML = '<span class="promo-success">Discount applied successfully!</span>';
+
+                discountDisplay.innerHTML = `
+                    <p class="discount-row">Discount: -Rs. ${discountAmount.toFixed(0)}</p>
+                `;
+            } else {
+                promoMessage.innerHTML = '<span class="promo-error">Invalid promo code</span>';
+            }
+        });
+
+        // Remove promo code logic
+        document.getElementById('removePromo').addEventListener('click', () => {
+            currentDiscount = 0;
+            appliedPromoCode = '';
+            discountAmount = 0;
+            document.getElementById('summaryTotal').textContent = originalTotal.toFixed(0);
+            document.getElementById('totalAmount').value = originalTotal.toFixed(0);
+            document.getElementById('appliedPromo').style.display = 'none';
+            document.getElementById('promoCode').value = '';
+            document.getElementById('promoMessage').textContent = '';
+            document.getElementById('discountDisplay').innerHTML = '';
+        });
+
+        // Initialize the UI
+        initializeUI();
+
+        // Form submission handler
+        document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Validate required fields
+            const formData = new FormData(e.target);
+            const requiredFields = ['movieId', 'theaterId', 'showDateTime', 'seatNumbers', 'totalAmount'];
+            const isValid = requiredFields.every(field => formData.get(field));
+
+            if (!isValid) {
+                alert('Booking details missing. Please select your seats again.');
+                window.location.href = '/select-seats.html';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/payments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams(formData)
+                });
+
+                if (response.ok) {
+                    // Save all confirmation details for confirmation page
+                    const result = await response.json().catch(() => ({}));
+                    sessionStorage.setItem('bookingConfirmation', JSON.stringify({
+                        bookingId: result.bookingId || '',
+                        movieId: bookingDetails.movieId,
+                        theaterId: bookingDetails.theaterId,
+                        showtime: bookingDetails.showDateTime || bookingDetails.showtime,
+                        seatNumbers: bookingDetails.seatNumbers,
+                        totalAmount: document.getElementById('totalAmount').value,
+                        promoCode: appliedPromoCode,
+                        discountAmount: discountAmount.toFixed(0)
+                    }));
+                    sessionStorage.removeItem('bookingDetails');
+                    window.location.href = '/booking-confirmation.html';
+                } else {
+                    const error = await response.text();
+                    alert(`Payment failed: ${error}`);
+                }
+            } catch (error) {
+                alert('Connection error. Please try again.');
+            }
+        });
     });
 </script>
 </body>

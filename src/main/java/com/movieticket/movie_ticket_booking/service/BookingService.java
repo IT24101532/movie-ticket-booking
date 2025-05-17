@@ -4,14 +4,16 @@ import com.movieticket.movie_ticket_booking.model.Booking;
 import org.springframework.stereotype.Service;
 import java.io.*;
 import java.nio.file.*;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
 
 @Service
 public class BookingService {
     private static final String BOOKING_FILE = "data/bookings.txt";
     private static final String DATA_DIR = "data";
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+    private static final DateTimeFormatter SHOWTIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public BookingService() {
         try {
@@ -22,53 +24,57 @@ public class BookingService {
         }
     }
 
-    // Existing: Get occupied seats for a specific movie, theater, and showtime (exact match)
+    // Returns seats booked for a specific movie, theater, and showtime (date+time)
     public List<String> getOccupiedSeats(String movieId, String theaterId, String showtime) throws IOException {
         List<String> occupied = new ArrayList<>();
         List<Booking> allBookings = getAllBookings();
+        String requestedShowtime = normalizeShowtime(showtime);
+
+        System.out.println("Checking for occupied seats: movieId=" + movieId + ", theaterId=" + theaterId + ", showtime=" + requestedShowtime);
+        System.out.println("All bookings: " + allBookings);
 
         for (Booking booking : allBookings) {
-            String bookingShowtime = booking.getShowDateTime();
-            String normalizedBookingShowtime = bookingShowtime.split("\\.")[0];
-            String normalizedRequestedShowtime = showtime.split("\\.")[0];
-
+            String bookingShowtime = normalizeShowtime(booking.getShowDateTime());
             if (
-                    booking.getMovieId().equals(movieId) &&
-                            booking.getTheaterId().equals(theaterId) &&
-                            normalizedBookingShowtime.equals(normalizedRequestedShowtime)
+                    safeEquals(booking.getMovieId(), movieId) &&
+                            safeEquals(booking.getTheaterId(), theaterId) &&
+                            safeEquals(bookingShowtime, requestedShowtime)
             ) {
-                String[] seats = booking.getSeats().split(",");
+                String[] seats = booking.getSeatNumbers().split(",");
                 for (String seat : seats) {
-                    occupied.add(seat.trim());
+                    if (!seat.trim().isEmpty()) occupied.add(seat.trim());
                 }
             }
         }
+        System.out.println("Occupied seats found: " + occupied);
         return occupied;
     }
 
-    // NEW: Get ALL seats ever booked for a movie and theater (ignore showtime)
+    // Returns all seats ever booked for a movie and theater (ignores showtime)
     public List<String> getAllTimeOccupiedSeats(String movieId, String theaterId) throws IOException {
         Set<String> occupied = new HashSet<>();
         List<Booking> allBookings = getAllBookings();
 
         for (Booking booking : allBookings) {
             if (
-                    booking.getMovieId().equals(movieId) &&
-                            booking.getTheaterId().equals(theaterId)
+                    safeEquals(booking.getMovieId(), movieId) &&
+                            safeEquals(booking.getTheaterId(), theaterId)
             ) {
-                String[] seats = booking.getSeats().split(",");
+                String[] seats = booking.getSeatNumbers().split(",");
                 for (String seat : seats) {
-                    occupied.add(seat.trim());
+                    if (!seat.trim().isEmpty()) occupied.add(seat.trim());
                 }
             }
         }
         return new ArrayList<>(occupied);
     }
 
-    // ... rest of your class remains unchanged ...
-
+    // Process and save a new booking
     public Booking processBooking(Booking booking) throws IOException {
-        if (booking.getMovieId() == null || booking.getTheaterId() == null || booking.getSeatNumbers() == null) {
+        System.out.println("Processing booking: " + booking.getSeatNumbers() + " for movieId=" + booking.getMovieId() + ", theaterId=" + booking.getTheaterId() + ", showDateTime=" + booking.getShowDateTime());
+
+        if (booking.getMovieId() == null || booking.getTheaterId() == null ||
+                booking.getSeatNumbers() == null || booking.getShowDateTime() == null) {
             throw new IOException("Invalid booking data");
         }
 
@@ -77,11 +83,13 @@ public class BookingService {
 
         for (String seat : newSeats) {
             if (occupied.contains(seat.trim())) {
+                System.out.println("Seat already occupied: " + seat.trim());
                 throw new IOException("Some seats are already occupied");
             }
         }
 
         saveBooking(booking);
+        System.out.println("Booking saved: " + booking);
         return booking;
     }
 
@@ -99,13 +107,14 @@ public class BookingService {
                 booking.getUserId(),
                 booking.getMovieId(),
                 booking.getTheaterId(),
-                booking.getShowDateTime(),
+                normalizeShowtime(booking.getShowDateTime()), // Always normalize when saving
                 booking.getSeatNumbers(),
-                String.valueOf(booking.getTotalAmount()));
+                String.valueOf(booking.getTotalAmount())
+        );
     }
 
     public List<Booking> getBookingsByUser(String userId) throws IOException {
-        return readBookings(parts -> parts.length >= 7 && parts[1].equals(userId));
+        return readBookings(parts -> parts.length >= 7 && safeEquals(parts[1], userId));
     }
 
     public List<Booking> getAllBookings() throws IOException {
@@ -153,7 +162,7 @@ public class BookingService {
 
         for (String line : lines) {
             String[] parts = line.split("\\|", 7);
-            if (parts.length >= 7 && parts[0].equals(bookingId) && parts[1].equals(userId)) {
+            if (parts.length >= 7 && safeEquals(parts[0], bookingId) && safeEquals(parts[1], userId)) {
                 found = true;
             } else {
                 updated.add(line);
@@ -164,5 +173,24 @@ public class BookingService {
             Files.write(Paths.get(BOOKING_FILE), updated);
         }
         return found;
+    }
+
+    // Helper: normalize showtime format to "yyyy-MM-dd HH:mm"
+    private String normalizeShowtime(String showtime) {
+        if (showtime == null || showtime.trim().isEmpty()) return "";
+        try {
+            String s = showtime.trim().replace("T", " ");
+            if (s.length() > 16) s = s.substring(0, 16);
+            LocalDateTime dt = LocalDateTime.parse(s, SHOWTIME_FORMAT);
+            return dt.format(SHOWTIME_FORMAT);
+        } catch (Exception e) {
+            // fallback: just trim and replace T with space
+            return showtime.trim().replace("T", " ").substring(0, Math.min(16, showtime.length()));
+        }
+    }
+
+    // Helper: safe string equals
+    private boolean safeEquals(String a, String b) {
+        return (a == null && b == null) || (a != null && a.equals(b));
     }
 }

@@ -4,79 +4,22 @@
     <meta charset="UTF-8">
     <title>Movie Details - Movie Vault</title>
     <link rel="stylesheet" href="/css/movies.css">
+    <!-- Flatpickr CSS for calendar -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
-        body {
-            background: #0b0b1d;
-            color: #fff;
-        }
-        .movie-details-container {
-            max-width: 900px;
-            margin: 30px auto;
-            background: #13132d;
-            border-radius: 10px;
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .movie-header {
-            display: flex;
-            gap: 30px;
-        }
-        .movie-poster {
-            width: 300px;
-            height: 450px;
-            object-fit: cover;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-        .movie-info {
-            flex: 1;
-        }
-        .movie-title {
-            font-size: 32px;
-            margin-bottom: 15px;
-            color: #fff;
-        }
-        .movie-meta {
-            color: #cd8c38;
-            margin-bottom: 20px;
-        }
-        .theater-selection {
-            background: rgba(0,0,0,0.2);
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-        .select-btn {
-            background: #6c63ff;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.3s;
-            display: inline-block;
-            text-decoration: none;
-            margin-top: 15px;
-        }
-        .select-btn:hover {
-            background: #5952cc;
-        }
-        #theaterSelect, #showtimeSelect {
-            padding: 10px;
-            width: 100%;
-            border-radius: 5px;
-            border: none;
-            margin: 10px 0;
-            background: #1c1c3a;
-            color: white;
-        }
-        #showtimeSelect:disabled {
-            background: #333;
-            color: #bbb;
-        }
+        body { background: #0b0b1d; color: #fff; }
+        .movie-details-container { max-width: 900px; margin: 30px auto; background: #13132d; border-radius: 10px; padding: 30px; display: flex; flex-direction: column; gap: 20px; }
+        .movie-header { display: flex; gap: 30px; }
+        .movie-poster { width: 300px; height: 450px; object-fit: cover; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .movie-info { flex: 1; }
+        .movie-title { font-size: 32px; margin-bottom: 15px; color: #fff; }
+        .movie-meta { color: #cd8c38; margin-bottom: 20px; }
+        .theater-selection { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 8px; margin-top: 20px; }
+        .select-btn { background: #6c63ff; color: white; border: none; padding: 12px 30px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: background 0.3s; display: inline-block; text-decoration: none; margin-top: 15px; }
+        .select-btn:hover { background: #5952cc; }
+        #theaterSelect, #timeSelect { padding: 10px; width: 100%; border-radius: 5px; border: none; margin: 10px 0; background: #1c1c3a; color: white; }
+        #timeSelect:disabled { background: #333; color: #bbb; }
+        #datePicker { padding: 10px; width: 100%; border-radius: 5px; border: none; margin: 10px 0; background: #1c1c3a; color: white; }
     </style>
 </head>
 <body>
@@ -113,9 +56,11 @@
                 <select id="theaterSelect" required>
                     <option value="">Loading theaters...</option>
                 </select>
-                <h3 style="margin-top:18px;">Select a Showtime</h3>
-                <select id="showtimeSelect" required disabled>
-                    <option value="">Select a theater first</option>
+                <h3 style="margin-top:18px;">Select a Date</h3>
+                <input type="text" id="datePicker" placeholder="Select a date" readonly disabled>
+                <h3 style="margin-top:18px;">Select a Time</h3>
+                <select id="timeSelect" required disabled>
+                    <option value="">Select a date first</option>
                 </select>
                 <button id="continueBtn" class="select-btn">Continue to Seat Selection</button>
             </div>
@@ -123,15 +68,22 @@
     </div>
 </div>
 
+<!-- Flatpickr JS for calendar -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
-    // --- SESSION-BASED PROTECTION ---
     if (sessionStorage.getItem('isLoggedIn') !== 'true') {
         window.location.href = '/login.html';
     }
 
+    let availableDates = [];
+    let movieId = null;
+    let theaterId = null;
+    let selectedDate = null;
+    let selectedTime = null;
+
     document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
-        const movieId = urlParams.get('id');
+        movieId = urlParams.get('id');
 
         if(movieId) {
             // Fetch movie details
@@ -155,49 +107,95 @@
                     if (theaters.length === 0) {
                         theaterSelect.innerHTML = '<option value="">No theaters available</option>';
                     } else {
-                        theaterSelect.innerHTML = theaters.map(t =>
-                            `<option value="${t.id}">${t.name} - ${t.location}</option>`
-                        ).join('');
+                        theaterSelect.innerHTML = '<option value="">Select a theater</option>' +
+                            theaters.map(t =>
+                                `<option value="${t.id}">${t.name} - ${t.location}</option>`
+                            ).join('');
                     }
                 });
 
-            // When theater changes, fetch showtimes
+            // When theater changes, fetch available dates and enable calendar
             document.getElementById('theaterSelect').addEventListener('change', function() {
-                const theaterId = this.value;
-                const showtimeSelect = document.getElementById('showtimeSelect');
+                theaterId = this.value;
+                selectedDate = null;
+                selectedTime = null;
+                document.getElementById('datePicker').value = '';
+                document.getElementById('datePicker').disabled = true;
+                document.getElementById('timeSelect').innerHTML = '<option value="">Select a date first</option>';
+                document.getElementById('timeSelect').disabled = true;
+
                 if (!theaterId) {
-                    showtimeSelect.innerHTML = '<option value="">Select a theater first</option>';
-                    showtimeSelect.disabled = true;
                     return;
                 }
-                fetch(`/api/showtimes?movieId=${movieId}&theaterId=${theaterId}`)
+                fetch(`/api/showdates?movieId=${movieId}&theaterId=${theaterId}`)
                     .then(res => res.json())
-                    .then(showtimes => {
-                        if (!showtimes.length) {
-                            showtimeSelect.innerHTML = '<option value="">No showtimes available</option>';
-                            showtimeSelect.disabled = true;
+                    .then(dates => {
+                        availableDates = dates;
+                        if (dates.length === 0) {
+                            document.getElementById('datePicker').disabled = true;
                         } else {
-                            showtimeSelect.innerHTML = showtimes.map(s =>
-                                `<option value="${s}">${s}</option>`
-                            ).join('');
-                            showtimeSelect.disabled = false;
+                            document.getElementById('datePicker').disabled = false;
+                            flatpickr("#datePicker", {
+                                enable: dates,
+                                dateFormat: "Y-m-d",
+                                onChange: function(selectedDates, dateStr) {
+                                    selectedDate = dateStr;
+                                    fetchTimesForDate();
+                                }
+                            });
                         }
                     });
             });
 
+            // Fetch times for the selected date
+            function fetchTimesForDate() {
+                if (!selectedDate || !theaterId) {
+                    document.getElementById('timeSelect').innerHTML = '<option value="">Select a date first</option>';
+                    document.getElementById('timeSelect').disabled = true;
+                    return;
+                }
+                fetch(`/api/showtimes?movieId=${movieId}&theaterId=${theaterId}&date=${encodeURIComponent(selectedDate)}`)
+                    .then(res => res.json())
+                    .then(times => {
+                        const timeSelect = document.getElementById('timeSelect');
+                        if (!times.length) {
+                            timeSelect.innerHTML = '<option value="">No times available</option>';
+                            timeSelect.disabled = true;
+                        } else {
+                            timeSelect.innerHTML = '<option value="">Select a time</option>' +
+                                times.map(t =>
+                                    `<option value="${t}">${t}</option>`
+                                ).join('');
+                            timeSelect.disabled = false;
+                        }
+                    });
+            }
+
+            // When time is selected, store selection
+            document.getElementById('timeSelect').addEventListener('change', function() {
+                selectedTime = this.value;
+            });
+
             // Continue button redirects to seat selection
             document.getElementById('continueBtn').addEventListener('click', function() {
-                const theaterId = document.getElementById('theaterSelect').value;
-                const showTime = document.getElementById('showtimeSelect').value;
+                theaterId = document.getElementById('theaterSelect').value;
+                selectedDate = document.getElementById('datePicker').value;
+                selectedTime = document.getElementById('timeSelect').value;
                 if (!theaterId) {
                     alert('Please select a theater');
                     return;
                 }
-                if (!showTime) {
-                    alert('Please select a showtime');
+                if (!selectedDate) {
+                    alert('Please select a date');
                     return;
                 }
-                window.location.href = `/select-seats.html?id=${movieId}&theaterId=${theaterId}&showTime=${encodeURIComponent(showTime)}`;
+                if (!selectedTime) {
+                    alert('Please select a time');
+                    return;
+                }
+                // Combine date and time as showtime string (e.g., "2024-06-10 14:30")
+                const showtime = `${selectedDate} ${selectedTime}`;
+                window.location.href = `/select-seats.html?id=${movieId}&theaterId=${theaterId}&showTime=${encodeURIComponent(showtime)}`;
             });
         }
     });

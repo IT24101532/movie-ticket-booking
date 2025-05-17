@@ -5,3 +5,4 @@ d7be36d1-0c6f-4492-acba-b58e8ddb1e63,osanda,imendu,osanda@gmail.com,Male,1234567
 086d1696-4b9a-4d75-9160-fbcc898206b3,hasal,kenula,hasal@gmail.com,Male,200034252323,isadeentoen,19145356,hasal123,USER
 6ac93674-4abf-4157-b662-0aa887926808,ramika,vidmal,ramika@gmail.com,Male,200405523967,godagam matara,16546678,ramika123,USER
 b38de410-047d-4850-9af0-1e89916db764,sachintha,hewa,hewa@gmail.com,Male,200405513967,walgama matara,12343234,hewa123,USER
+440306d6-8966-40ab-b459-3e04bfdd18ef,lelum,Imendu,lelum@gmail.com,Female,200405673424,2Road Matara,18745345,lelum123,USER

@@ -3,31 +3,23 @@ package com.movieticket.movie_ticket_booking.controller;
 import com.movieticket.movie_ticket_booking.model.User;
 import com.movieticket.movie_ticket_booking.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
-import org.springframework.http.ResponseEntity;
-
 
 @Controller
 public class AuthController {
-
     @Autowired
     private UserService userService;
 
-    // Customer login page
     @GetMapping("/login")
     public String showLoginPage() {
         return "login.html";
     }
 
-    // Customer login processing
     @PostMapping("/login")
     public String processLogin(
             @RequestParam String email,
@@ -43,13 +35,12 @@ public class AuthController {
                 session.setAttribute("isLoggedIn", true);
                 session.setAttribute("userName", user.getFirstName() + " " + user.getLastName());
 
-                if ("ADMIN".equals(user.getRole())) {
-                    session.setAttribute("isAdmin", true);
+                // Only set admin attribute if user is actually an admin
+                if ("ADMIN".equalsIgnoreCase(user.getRole())) {
+                    session.setAttribute("admin", user);
                     return "redirect:/admin-home.html";
-                } else {
-                    session.setAttribute("isAdmin", false);
-                    return "redirect:/movies.html";
                 }
+                return "redirect:/movies.html";
             } else {
                 return "redirect:/login.html?error=invalid";
             }
@@ -58,13 +49,11 @@ public class AuthController {
         }
     }
 
-    // Admin login page
     @GetMapping("/admin-login")
     public String showAdminLoginPage() {
         return "admin-login.html";
     }
 
-    // Admin login processing
     @PostMapping("/admin-auth")
     public String adminAuth(
             @RequestParam String email,
@@ -74,9 +63,10 @@ public class AuthController {
         try {
             User admin = userService.authenticateAdmin(email, password);
             if (admin != null) {
+                // Set both attributes for admin
                 session.setAttribute("user", admin);
+                session.setAttribute("admin", admin);
                 session.setAttribute("isLoggedIn", true);
-                session.setAttribute("isAdmin", true);
                 session.setAttribute("userName", "Admin User");
                 return "redirect:/admin-home.html";
             } else {
@@ -87,31 +77,17 @@ public class AuthController {
         }
     }
 
-    // Logout for both user types
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/";
     }
 
-    // Admin user management endpoint
-    @GetMapping("/api/admin/users")
-    @ResponseBody
-    public ResponseEntity<List<User>> getAllUsers() {
-        try {
-            return ResponseEntity.ok(userService.getAllUsers());
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
-    // Registration page
     @GetMapping("/register")
     public String showRegisterPage() {
         return "register.html";
     }
 
-    // Handle registration (consolidated logic from UserController)
     @PostMapping("/register")
     public String processRegister(
             @RequestParam String firstName,
@@ -134,16 +110,13 @@ public class AuthController {
             User registered = userService.registerUser(user);
 
             if (registered != null) {
+                // Do NOT auto-login after registration
                 return "redirect:/login.html?registered=success";
             } else {
                 return "redirect:/register.html?error=exists";
             }
         } catch (IOException e) {
-            e.printStackTrace(); // 👈 Log the exception
             return "redirect:/register.html?error=system";
         }
     }
-
-
-
 }

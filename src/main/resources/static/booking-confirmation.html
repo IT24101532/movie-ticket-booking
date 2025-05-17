@@ -4,16 +4,39 @@
     <meta charset="UTF-8">
     <title>Booking Confirmation - Movie Vault</title>
     <link rel="stylesheet" href="/css/booking-confirmation.css">
+    <style>
+        body { background: #18182a; color: #fff; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: #23235a; }
+        .brand { font-weight: bold; font-size: 1.3rem; letter-spacing: 2px; }
+        .nav-links a { color: #fff; margin-left: 1.5rem; text-decoration: none; font-weight: 500; }
+        .page-title { text-align: center; font-size: 2.2rem; margin: 2rem 0 0.7rem 0; color: #6c63ff; }
+        .breadcrumb { text-align: center; color: #b3b3ff; margin-bottom: 2rem; }
+        .confirmation-container { max-width: 520px; margin: 2rem auto; background: #23235a; border-radius: 12px; box-shadow: 0 8px 24px #0004; padding: 2rem; }
+        .confirmation-header { text-align: center; margin-bottom: 1.5rem; }
+        .confirmation-header h2 { color: #7fff7f; }
+        .ticket { background: #18182a; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .ticket-header { text-align: center; margin-bottom: 1rem; }
+        .ticket-header h3 { margin: 0; }
+        .booking-id { color: #b3b3ff; font-size: 1rem; }
+        .ticket-details { display: flex; flex-direction: column; gap: 0.5rem; }
+        .ticket-movie h4 { margin: 0; }
+        .ticket-info p { margin: 0.2rem 0; }
+        .promo-info { background: #6c63ff22; color: #6c63ff; padding: 0.5rem 1rem; border-radius: 5px; margin: 0.5rem 0 1rem 0; }
+        .ticket-footer { text-align: center; color: #b3b3ff; font-size: 0.95rem; margin-top: 1rem; }
+        .confirmation-actions { display: flex; justify-content: center; gap: 1.5rem; }
+        .action-btn { background: #6c63ff; color: #fff; padding: 0.7rem 1.5rem; border-radius: 5px; text-decoration: none; font-weight: bold; transition: background 0.2s; }
+        .action-btn:hover { background: #5a54cc; }
+    </style>
 </head>
 <body>
 <div class="navbar">
     <span class="brand">MOVIE<br>VAULT</span>
     <span class="nav-links">
-            <a href="/index.html">HOME</a>
-            <a href="/movies.html">MOVIES</a>
-            <a href="/theaters.html">THEATERS</a>
-            <a href="/login.html">LOGIN</a>
-        </span>
+        <a href="/index.html">HOME</a>
+        <a href="/movies.html">MOVIES</a>
+        <a href="/theaters.html">THEATERS</a>
+        <a href="/login.html">LOGIN</a>
+    </span>
 </div>
 <div class="page-title">BOOKING CONFIRMATION</div>
 <div class="breadcrumb">HOME / BOOKING / CONFIRMATION</div>
@@ -38,7 +61,8 @@
                 <p><strong>Theater:</strong> <span id="theaterName">Theater Name</span></p>
                 <p><strong>Date & Time:</strong> <span id="showtime">May 3, 2025 - 7:30 PM</span></p>
                 <p><strong>Seats:</strong> <span id="seatNumbers">A1, A2, A3</span></p>
-                <p><strong>Total Amount:</strong> <span id="totalAmount">$30</span></p>
+                <div id="promoInfo"></div>
+                <p><strong>Total Amount:</strong> <span id="totalAmount">Rs. 900</span></p>
             </div>
         </div>
         <div class="ticket-footer">
@@ -48,9 +72,54 @@
     </div>
 
     <div class="confirmation-actions">
-        <a href="/booking-history.html" class="action-btn">View All Bookings</a>
+        <a href="/profile.html" class="action-btn">View All Bookings</a>
         <a href="/movies.html" class="action-btn">Book Another Movie</a>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get booking confirmation details from sessionStorage (set by payment page)
+        const confirmData = JSON.parse(sessionStorage.getItem('bookingConfirmation') || '{}');
+
+        // Set Booking ID
+        document.getElementById('bookingId').textContent = confirmData.bookingId || 'N/A';
+
+        // Set seat numbers and amount
+        document.getElementById('seatNumbers').textContent = confirmData.seatNumbers || 'N/A';
+        document.getElementById('totalAmount').textContent = 'Rs. ' + (confirmData.totalAmount || '0');
+
+        // Set showtime
+        document.getElementById('showtime').textContent = confirmData.showtime || 'N/A';
+
+        // Show promo code and discount if present
+        if (confirmData.promoCode && Number(confirmData.discountAmount) > 0) {
+            document.getElementById('promoInfo').innerHTML =
+                `<div class="promo-info">
+                    <strong>Promo Code:</strong> <span>${confirmData.promoCode}</span><br>
+                    <strong>Discount Applied:</strong> <span>Rs. ${confirmData.discountAmount}</span>
+                </div>`;
+        } else {
+            document.getElementById('promoInfo').innerHTML = '';
+        }
+
+        // Fetch and set movie and theater info
+        if (confirmData.movieId) {
+            fetch(`/api/movies/${confirmData.movieId}`)
+                .then(res => res.json())
+                .then(movie => {
+                    document.getElementById('movieTitle').textContent = movie.title || 'Movie Title';
+                    document.getElementById('movieLanguage').textContent = movie.language || '';
+                });
+        }
+        if (confirmData.theaterId) {
+            fetch(`/api/theaters/${confirmData.theaterId}`)
+                .then(res => res.json())
+                .then(theater => {
+                    document.getElementById('theaterName').textContent = theater.name || 'Theater Name';
+                });
+        }
+    });
+</script>
 </body>
 </html>

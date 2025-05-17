@@ -131,7 +131,7 @@
                 movieId: movieId,
                 theaterId: theaterId,
                 showtime: showtime,
-                seatNumbers: seatIds,
+                seatNumbers: seatIds.join(','),
                 totalAmount: seatIds.length * 300
             }));
             window.location.href = '/payment.html';
@@ -161,12 +161,11 @@
     }
 
     function refreshSeatStatus() {
-        // Fetch ALL previously booked seats for this movie and theater (ignore showtime)
-        fetch(`/api/bookings/all-occupied-seats?movieId=${encodeURIComponent(movieId)}&theaterId=${encodeURIComponent(theaterId)}`)
+        fetch(`/api/bookings/seats?movieId=${encodeURIComponent(movieId)}&theaterId=${encodeURIComponent(theaterId)}&showtime=${encodeURIComponent(showtime)}`)
             .then(res => res.json())
             .then(bookedSeats => {
-                // Normalize for case/whitespace
                 const normalizedBooked = bookedSeats.map(seat => seat.trim().toUpperCase());
+                let anyAvailable = false;
                 document.querySelectorAll('.seat').forEach(seat => {
                     const seatName = seat.dataset.seat.trim().toUpperCase();
                     const isOccupied = normalizedBooked.includes(seatName);
@@ -176,9 +175,16 @@
                         seat.onclick = null;
                     } else {
                         seat.onclick = toggleSeat;
+                        anyAvailable = true;
                     }
                 });
+                if (!anyAvailable) {
+                    document.getElementById('seatMap').innerHTML = '<p style="text-align: center; color: #ff6b6b;">No seats available for this showtime.</p>';
+                }
                 updateSummary();
+            })
+            .catch(() => {
+                document.getElementById('seatMap').innerHTML = '<p style="text-align: center; color: #ff6b6b;">Could not load seat status. Please try again later.</p>';
             });
     }
 

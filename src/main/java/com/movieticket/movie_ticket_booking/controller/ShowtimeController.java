@@ -33,12 +33,31 @@ public class ShowtimeController {
         }
     }
 
-    // Fetch showtimes for a movie-theater pair (USER/ADMIN)
+    // Fetch all showtimes for a movie-theater pair (legacy, not used by new UI)
     @GetMapping("/api/showtimes")
     public List<String> getShowtimes(
             @RequestParam String movieId,
             @RequestParam String theaterId
     ) throws IOException {
         return showtimeService.getShowtimes(movieId, theaterId);
+    }
+
+    // NEW: Fetch all available dates for a movie-theater pair
+    @GetMapping("/api/showdates")
+    public List<String> getShowDates(
+            @RequestParam String movieId,
+            @RequestParam String theaterId
+    ) throws IOException {
+        return showtimeService.getShowDates(movieId, theaterId);
+    }
+
+    // NEW: Fetch all available times for a given movie-theater-date
+    @GetMapping(value = "/api/showtimes", params = {"movieId", "theaterId", "date"})
+    public List<String> getShowTimesForDate(
+            @RequestParam String movieId,
+            @RequestParam String theaterId,
+            @RequestParam String date
+    ) throws IOException {
+        return showtimeService.getShowTimesForDate(movieId, theaterId, date);
     }
 }

@@ -29,7 +29,7 @@ public class ShowtimeService {
         }
     }
 
-    // Get showtimes for a movie-theater pair
+    // Get showtimes for a movie-theater pair (returns full showtime strings)
     public List<String> getShowtimes(String movieId, String theaterId) throws IOException {
         List<String> showtimes = new ArrayList<>();
         List<String> lines = Files.readAllLines(Paths.get(SHOWTIME_FILE));
@@ -40,5 +40,28 @@ public class ShowtimeService {
             }
         }
         return showtimes;
+    }
+
+    // NEW: Get all unique dates for a movie-theater pair
+    public List<String> getShowDates(String movieId, String theaterId) throws IOException {
+        Set<String> dates = new LinkedHashSet<>();
+        for (String showtime : getShowtimes(movieId, theaterId)) {
+            // Accepts "YYYY-MM-DD HH:mm" or "YYYY-MM-DDTHH:mm"
+            String date = showtime.split("[ T]")[0];
+            dates.add(date);
+        }
+        return new ArrayList<>(dates);
+    }
+
+    // NEW: Get all times for a movie-theater pair on a specific date
+    public List<String> getShowTimesForDate(String movieId, String theaterId, String date) throws IOException {
+        List<String> times = new ArrayList<>();
+        for (String showtime : getShowtimes(movieId, theaterId)) {
+            String[] parts = showtime.split("[ T]");
+            if (parts.length > 1 && parts[0].equals(date)) {
+                times.add(parts[1]);
+            }
+        }
+        return times;
     }
 }

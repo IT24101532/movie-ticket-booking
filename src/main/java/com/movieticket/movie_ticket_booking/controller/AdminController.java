@@ -1,7 +1,6 @@
 package com.movieticket.movie_ticket_booking.controller;
 
 import com.movieticket.movie_ticket_booking.model.Movie;
-import com.movieticket.movie_ticket_booking.model.User;
 import com.movieticket.movie_ticket_booking.service.MovieService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -14,7 +13,6 @@ import java.time.LocalTime;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-
     private final MovieService movieService;
 
     public AdminController(MovieService movieService) {
@@ -23,16 +21,15 @@ public class AdminController {
 
     @GetMapping
     public String adminDashboard(HttpSession session, Model model) {
-        // Authentication check
-        User user = (User) session.getAttribute("user");
-        if (user == null || !"ADMIN".equalsIgnoreCase(user.getRole())) {
+        // Check for admin session attribute (not user role)
+        if (session.getAttribute("admin") == null) {
             return "redirect:/login";
         }
 
         try {
             model.addAttribute("movies", movieService.getAllMovies());
             model.addAttribute("movieCount", movieService.getAllMovies().size());
-        } catch (Exception e) { // Changed from IOException to general Exception
+        } catch (Exception e) {
             model.addAttribute("error", "Error loading movies: " + e.getMessage());
         }
         return "admin-dashboard";
@@ -52,9 +49,8 @@ public class AdminController {
             HttpSession session,
             Model model) {
 
-        // Authentication check
-        User user = (User) session.getAttribute("user");
-        if (user == null || !"ADMIN".equalsIgnoreCase(user.getRole())) {
+        // Check for admin session attribute
+        if (session.getAttribute("admin") == null) {
             return "redirect:/login";
         }
 
@@ -74,7 +70,7 @@ public class AdminController {
 
         } catch (Exception e) {
             model.addAttribute("error", "Error adding movie: " + e.getMessage());
-            return "admin-dashboard"; // Stay on same page to show error
+            return "admin-dashboard";
         }
     }
 
@@ -84,9 +80,8 @@ public class AdminController {
             HttpSession session,
             Model model) {
 
-        // Authentication check
-        User user = (User) session.getAttribute("user");
-        if (user == null || !"ADMIN".equalsIgnoreCase(user.getRole())) {
+        // Check for admin session attribute
+        if (session.getAttribute("admin") == null) {
             return "redirect:/login";
         }
 
