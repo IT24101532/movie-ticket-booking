@@ -8,12 +8,15 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-
 @Service
 public class BookingService {
     private static final String BOOKING_FILE = "data/bookings.txt";
     private static final String DATA_DIR = "data";
     private static final DateTimeFormatter SHOWTIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+    // Simple queue using a synchronized list
+    private final List<Booking> bookingQueue = Collections.synchronizedList(new ArrayList<>());
+    private final Object queueLock = new Object();
 
     public BookingService() {
         try {
@@ -22,56 +25,49 @@ public class BookingService {
         } catch (IOException e) {
             System.err.println("Error initializing data files: " + e.getMessage());
         }
-    }
 
-    // Returns seats booked for a specific movie, theater, and showtime (date+time)
-    public List<String> getOccupiedSeats(String movieId, String theaterId, String showtime) throws IOException {
-        List<String> occupied = new ArrayList<>();
-        List<Booking> allBookings = getAllBookings();
-        String requestedShowtime = normalizeShowtime(showtime);
-
-        System.out.println("Checking for occupied seats: movieId=" + movieId + ", theaterId=" + theaterId + ", showtime=" + requestedShowtime);
-        System.out.println("All bookings: " + allBookings);
-
-        for (Booking booking : allBookings) {
-            String bookingShowtime = normalizeShowtime(booking.getShowDateTime());
-            if (
-                    safeEquals(booking.getMovieId(), movieId) &&
-                            safeEquals(booking.getTheaterId(), theaterId) &&
-                            safeEquals(bookingShowtime, requestedShowtime)
-            ) {
-                String[] seats = booking.getSeatNumbers().split(",");
-                for (String seat : seats) {
-                    if (!seat.trim().isEmpty()) occupied.add(seat.trim());
+        // Start background thread to process the queue
+        Thread processor = new Thread(() -> {
+            while (true) {
+                Booking nextBooking = null;
+                synchronized (queueLock) {
+                    if (!bookingQueue.isEmpty()) {
+                        nextBooking = bookingQueue.remove(0);
+                    }
+                }
+                if (nextBooking != null) {
+                    try {
+                        processBookingDirect(nextBooking);
+                    } catch (IOException e) {
+                        System.err.println("Failed to process booking: " + e.getMessage());
+                    }
+                } else {
+                    try {
+                        Thread.sleep(100); // Sleep briefly if queue is empty
+                    } catch (InterruptedException e) {
+                        break;
+                    }
                 }
             }
-        }
-        System.out.println("Occupied seats found: " + occupied);
-        return occupied;
+        });
+        processor.setDaemon(true);
+        processor.start();
     }
 
-    // Returns all seats ever booked for a movie and theater (ignores showtime)
-    public List<String> getAllTimeOccupiedSeats(String movieId, String theaterId) throws IOException {
-        Set<String> occupied = new HashSet<>();
-        List<Booking> allBookings = getAllBookings();
-
-        for (Booking booking : allBookings) {
-            if (
-                    safeEquals(booking.getMovieId(), movieId) &&
-                            safeEquals(booking.getTheaterId(), theaterId)
-            ) {
-                String[] seats = booking.getSeatNumbers().split(",");
-                for (String seat : seats) {
-                    if (!seat.trim().isEmpty()) occupied.add(seat.trim());
-                }
-            }
+    // Call this method from your controller to add a booking request to the queue
+    public void queueBooking(Booking booking) {
+        synchronized (queueLock) {
+            bookingQueue.add(booking);
         }
-        return new ArrayList<>(occupied);
+        System.out.println("Booking added to queue: " + booking.getId());
     }
 
-    // Process and save a new booking
-    public Booking processBooking(Booking booking) throws IOException {
-        System.out.println("Processing booking: " + booking.getSeatNumbers() + " for movieId=" + booking.getMovieId() + ", theaterId=" + booking.getTheaterId() + ", showDateTime=" + booking.getShowDateTime());
+    // This method is used internally by the queue processor
+    private Booking processBookingDirect(Booking booking) throws IOException {
+        System.out.println("Processing booking: " + booking.getSeatNumbers() +
+                " for movieId=" + booking.getMovieId() +
+                ", theaterId=" + booking.getTheaterId() +
+                ", showDateTime=" + booking.getShowDateTime());
 
         if (booking.getMovieId() == null || booking.getTheaterId() == null ||
                 booking.getSeatNumbers() == null || booking.getShowDateTime() == null) {
@@ -93,6 +89,54 @@ public class BookingService {
         return booking;
     }
 
+    // (Keep all your other methods unchanged below)
+    // ...
+
+    public List<String> getOccupiedSeats(String movieId, String theaterId, String showtime) throws IOException {
+        List<String> occupied = new ArrayList<>();
+        List<Booking> allBookings = getAllBookings();
+        String requestedShowtime = normalizeShowtime(showtime);
+
+        for (Booking booking : allBookings) {
+            String bookingShowtime = normalizeShowtime(booking.getShowDateTime());
+            if (
+                    safeEquals(booking.getMovieId(), movieId) &&
+                            safeEquals(booking.getTheaterId(), theaterId) &&
+                            safeEquals(bookingShowtime, requestedShowtime)
+            ) {
+                String[] seats = booking.getSeatNumbers().split(",");
+                for (String seat : seats) {
+                    if (!seat.trim().isEmpty()) occupied.add(seat.trim());
+                }
+            }
+        }
+        return occupied;
+    }
+
+    public List<String> getAllTimeOccupiedSeats(String movieId, String theaterId) throws IOException {
+        Set<String> occupied = new HashSet<>();
+        List<Booking> allBookings = getAllBookings();
+
+        for (Booking booking : allBookings) {
+            if (
+                    safeEquals(booking.getMovieId(), movieId) &&
+                            safeEquals(booking.getTheaterId(), theaterId)
+            ) {
+                String[] seats = booking.getSeatNumbers().split(",");
+                for (String seat : seats) {
+                    if (!seat.trim().isEmpty()) occupied.add(seat.trim());
+                }
+            }
+        }
+        return new ArrayList<>(occupied);
+    }
+
+    public Booking processBooking(Booking booking) throws IOException {
+        // This method can be left as is for direct processing if needed,
+        // but for queued processing, use queueBooking(booking)
+        return processBookingDirect(booking);
+    }
+
     private void saveBooking(Booking booking) throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(
                 Paths.get(BOOKING_FILE), StandardOpenOption.CREATE, StandardOpenOption.APPEND)) {
@@ -107,7 +151,7 @@ public class BookingService {
                 booking.getUserId(),
                 booking.getMovieId(),
                 booking.getTheaterId(),
-                normalizeShowtime(booking.getShowDateTime()), // Always normalize when saving
+                normalizeShowtime(booking.getShowDateTime()),
                 booking.getSeatNumbers(),
                 String.valueOf(booking.getTotalAmount())
         );
@@ -175,7 +219,6 @@ public class BookingService {
         return found;
     }
 
-    // Helper: normalize showtime format to "yyyy-MM-dd HH:mm"
     private String normalizeShowtime(String showtime) {
         if (showtime == null || showtime.trim().isEmpty()) return "";
         try {
@@ -184,12 +227,10 @@ public class BookingService {
             LocalDateTime dt = LocalDateTime.parse(s, SHOWTIME_FORMAT);
             return dt.format(SHOWTIME_FORMAT);
         } catch (Exception e) {
-            // fallback: just trim and replace T with space
             return showtime.trim().replace("T", " ").substring(0, Math.min(16, showtime.length()));
         }
     }
 
-    // Helper: safe string equals
     private boolean safeEquals(String a, String b) {
         return (a == null && b == null) || (a != null && a.equals(b));
     }
