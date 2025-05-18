@@ -79,7 +79,7 @@ public class UserService {
                 user.getRole());
     }
 
-    // --- User Lookup Methods ---
+
     public User findUserByEmailAndPassword(String email, String password) throws IOException {
         System.out.println("[DEBUG] Login attempt: " + email + " / " + password);
 
@@ -108,7 +108,7 @@ public class UserService {
                 .orElse(null);
     }
 
-    // --- New Methods for Admin & Profile Features ---
+
     public List<User> getAllUsers() throws IOException {
         return readUsersFromFile();
     }
