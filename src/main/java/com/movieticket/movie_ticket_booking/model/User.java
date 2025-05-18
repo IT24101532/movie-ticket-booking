@@ -19,7 +19,7 @@ public class User {
         this.address = address;
         this.mobile = mobile;
         this.password = password;
-        this.role = "USER"; // Default role
+        this.role = "USER";
     }
 
     public String getFirstName() { return firstName; }
