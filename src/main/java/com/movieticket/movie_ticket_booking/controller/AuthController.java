@@ -35,7 +35,7 @@ public class AuthController {
                 session.setAttribute("isLoggedIn", true);
                 session.setAttribute("userName", user.getFirstName() + " " + user.getLastName());
 
-                // Only set admin attribute if user is actually an admin
+
                 if ("ADMIN".equalsIgnoreCase(user.getRole())) {
                     session.setAttribute("admin", user);
                     return "redirect:/admin-home.html";
@@ -110,7 +110,6 @@ public class AuthController {
             User registered = userService.registerUser(user);
 
             if (registered != null) {
-                // Do NOT auto-login after registration
                 return "redirect:/login.html?registered=success";
             } else {
                 return "redirect:/register.html?error=exists";
