@@ -22,7 +22,6 @@ public class User {
         this.role = "USER"; // Default role
     }
 
-    // All existing getters and setters
     public String getFirstName() { return firstName; }
     public void setFirstName(String firstName) { this.firstName = firstName; }
     public String getLastName() { return lastName; }
@@ -42,7 +41,6 @@ public class User {
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
-    // New getters and setters for role
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
 }
