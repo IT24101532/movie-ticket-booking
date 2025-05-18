@@ -18,15 +18,12 @@ public class UserProfileRestController {
     public User getProfile(HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user != null) {
-            // Optionally fetch latest from DB/service if needed
-            // return userService.getUserById(user.getId());
+
             return user;
         }
-        // Not logged in, return empty user or handle unauthorized as needed
         return new User();
     }
 
-    // PUT /api/user/profile - update the logged-in user's profile
     @PutMapping("/profile")
     public User updateProfile(@RequestBody User updatedUser, HttpSession session) {
         User sessionUser = (User) session.getAttribute("user");
@@ -35,7 +32,6 @@ public class UserProfileRestController {
             return new User();
         }
 
-        // Update fields using your User model's methods
         sessionUser.setFirstName(updatedUser.getFirstName());
         sessionUser.setLastName(updatedUser.getLastName());
         sessionUser.setEmail(updatedUser.getEmail());
@@ -43,12 +39,8 @@ public class UserProfileRestController {
         sessionUser.setGender(updatedUser.getGender());
         sessionUser.setNic(updatedUser.getNic());
         sessionUser.setAddress(updatedUser.getAddress());
-        // Do NOT update password or role here unless intended
 
-        // If you have a persistence mechanism, save the updated user here.
-        // For example: userService.saveOrUpdate(sessionUser);
 
-        // Update the session with the new user info
         session.setAttribute("user", sessionUser);
 
         return sessionUser;
