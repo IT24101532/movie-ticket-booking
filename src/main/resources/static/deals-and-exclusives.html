@@ -4,6 +4,22 @@
     <meta charset="UTF-8">
     <title>Deals & Exclusives | Movie Vault</title>
     <link rel="stylesheet" href="css/deals.css">
+    <style>
+        .deal-card { background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); margin: 18px; padding: 18px; width: 320px; display: inline-block; vertical-align: top;}
+        .deal-card img { width: 100%; border-radius: 8px;}
+        .ribbon { position: absolute; left: 0; top: 0; padding: 6px 18px; color: #fff; font-weight: bold; border-radius: 0 0 8px 0;}
+        .ribbon.hot { background: #e53e3e;}
+        .ribbon.popular { background: #f59e0b;}
+        .ribbon.family { background: #3b82f6;}
+        .deals-title { text-align: center; margin: 35px 0 10px 0; font-size: 2rem;}
+        .deals-container { display: flex; flex-wrap: wrap; justify-content: center;}
+        .code-section { margin: 8px 0;}
+        .use-code { font-weight: 500;}
+        .code { background: #fbbf24; color: #23233b; border-radius: 4px; padding: 2px 8px; margin-left: 6px;}
+        .deal-desc { color: #444; font-size: 0.97em; margin-bottom: 10px;}
+        .claim-btn { background: #5f6dfa; color: #fff; border: none; border-radius: 6px; padding: 8px 20px; font-size: 1em; cursor: pointer; margin-top: 10px;}
+        .claim-btn:hover { background: #3d4bc7;}
+    </style>
 </head>
 <body>
 <nav class="navbar">
@@ -17,47 +33,37 @@
 </nav>
 <main>
     <h1 class="deals-title"><span>🔥</span> Exclusive Movie Deals</h1>
-    <div class="deals-container">
-        <!-- Deal Card 1 -->
-        <div class="deal-card">
-            <img src="img/projector.jpg" alt="Weekend Madness">
-            <div class="ribbon hot">HOT DEAL</div>
-            <h2>Weekend Madness!</h2>
-            <p>50% OFF on all weekend shows with VISA cards</p>
-            <div class="code-section">
-                <span class="use-code">Use Code:</span>
-                <span class="code">WEEKEND50</span>
-            </div>
-            <div class="deal-desc">Valid Friday-Sunday. Maximum discount Rs..</div>
-            <button class="claim-btn" onclick="window.location.href='offer-claimed.html'">CLAIM OFFER</button>
-        </div>
-        <!-- Deal Card 2 -->
-        <div class="deal-card">
-            <img src="img/students.jpg" alt="Student Special">
-            <div class="ribbon popular">POPULAR</div>
-            <h2>Student Special</h2>
-            <p>40% discount for students on all movies</p>
-            <div class="code-section">
-                <span class="use-code">Use Code:</span>
-                <span class="code">STUDENT40</span>
-            </div>
-            <div class="deal-desc">Valid ID required at venue. Monday-Thursday only.</div>
-            <button class="claim-btn" onclick="window.location.href='offer-claimed.html'">CLAIM OFFER</button>
-        </div>
-        <!-- Deal Card 3 -->
-        <div class="deal-card">
-            <img src="img/popcorn.jpg" alt="Family Pack">
-            <div class="ribbon family">FAMILY</div>
-            <h2>Family Pack</h2>
-            <p>4 tickets + 2 popcorn combos for just Rs.1999</p>
-            <div class="code-section">
-                <span class="use-code">Use Code:</span>
-                <span class="code">FAMILY999</span>
-            </div>
-            <div class="deal-desc">Available for morning shows only.</div>
-            <button class="claim-btn" onclick="window.location.href='offer-claimed.html'">CLAIM OFFER</button>
-        </div>
+    <div class="deals-container" id="dealsContainer">
+        <!-- Deals will be injected here -->
     </div>
+    <script>
+        function renderDeals() {
+            const deals = JSON.parse(localStorage.getItem('deals')) || [];
+            const container = document.getElementById('dealsContainer');
+            container.innerHTML = '';
+            if (deals.length === 0) {
+                container.innerHTML = '<p style="color:#333;">No deals available at the moment.</p>';
+                return;
+            }
+            deals.forEach(deal => {
+                container.innerHTML += `
+                    <div class="deal-card" style="position:relative;">
+                        <img src="${deal.image}" alt="${deal.title}">
+                        <div class="ribbon ${deal.ribbon}">${deal.ribbon.toUpperCase()}</div>
+                        <h2>${deal.title}</h2>
+                        <p>${deal.desc}</p>
+                        <div class="code-section">
+                            <span class="use-code">Use Code:</span>
+                            <span class="code">${deal.code}</span>
+                        </div>
+                        <div class="deal-desc">${deal.terms}</div>
+                        <button class="claim-btn" onclick="window.location.href='offer-claimed.html'">CLAIM OFFER</button>
+                    </div>
+                `;
+            });
+        }
+        renderDeals();
+    </script>
 </main>
 </body>
 </html>

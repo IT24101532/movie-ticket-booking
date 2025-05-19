@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add New Deal | Movie Vault</title>
+  <link rel="stylesheet" href="css/admin-deals.css">
+  <style>
+    body { background: #181824; color: #fff; font-family: 'Segoe UI', Arial, sans-serif; }
+    .deal-form-container {
+        max-width: 480px; margin: 40px auto; background: #23233b;
+        padding: 32px 28px; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.11);
+    }
+    h2 { text-align: center; margin-bottom: 24px; color: #ffd700; }
+    .deal-form label { font-weight: 500; margin-bottom: 7px; display: block; color: #ffd700; }
+    .deal-form input, .deal-form textarea, .deal-form select {
+        width: 100%; padding: 8px 10px; margin-bottom: 16px;
+        border-radius: 5px; border: 1px solid #cbd5e1; font-size: 1em; background: #22223b; color: #fff;
+    }
+    .deal-form button {
+        width: 100%; padding: 10px 0; background: #ffd700; color: #23233b;
+        border: none; border-radius: 6px; font-size: 1.1em; font-weight: 600; cursor: pointer;
+        transition: background 0.2s;
+    }
+    .deal-form button:hover { background: #e6c200; }
+    .existing-deals {
+        max-width: 480px;
+        margin: 30px auto 0 auto;
+        background: #fff;
+        color: #22223b;
+        border-radius: 8px;
+        padding: 18px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    }
+    .existing-deals h3 {
+        color: #3b3b3b;
+        margin-bottom: 15px;
+        font-size: 1.1em;
+    }
+    .deal-preview {
+        background: #f3f4f6;
+        border-radius: 6px;
+        padding: 8px 14px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.98em;
+    }
+    .deal-preview .ribbon-preview {
+        font-size: 0.75em;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-right: 10px;
+        color: white;
+    }
+    .ribbon-preview.hot { background: #e53e3e; }
+    .ribbon-preview.popular { background: #f59e0b; }
+    .ribbon-preview.family { background: #3b82f6; }
+  </style>
+</head>
+<body>
+<div class="deal-form-container">
+  <h2>Add New Deal</h2>
+  <form class="deal-form" id="dealForm">
+    <label for="title">Deal Title</label>
+    <input type="text" id="title" name="title" required>
+
+    <label for="ribbon">Ribbon</label>
+    <select id="ribbon" name="ribbon">
+      <option value="hot">HOT DEAL</option>
+      <option value="popular">POPULAR</option>
+      <option value="family">FAMILY</option>
+    </select>
+
+    <label for="image">Image URL (relative, e.g., img/popcorn.jpg)</label>
+    <input type="text" id="image" name="image" required>
+
+    <label for="desc">Description</label>
+    <textarea id="desc" name="desc" rows="2" required></textarea>
+
+    <label for="code">Promo Code</label>
+    <input type="text" id="code" name="code" required>
+
+    <label for="terms">Terms/Validity</label>
+    <input type="text" id="terms" name="terms" required>
+
+    <button type="submit">Add Deal</button>
+  </form>
+</div>
+<div class="existing-deals">
+  <h3>Current Active Deals</h3>
+  <div id="existingDealsContainer">
+    <!-- Deals will be loaded here -->
+  </div>
+</div>
+<script>
+  // Save deal data to localStorage
+  document.getElementById('dealForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const deal = {
+          title: document.getElementById('title').value,
+          ribbon: document.getElementById('ribbon').value,
+          image: document.getElementById('image').value,
+          desc: document.getElementById('desc').value,
+          code: document.getElementById('code').value,
+          terms: document.getElementById('terms').value
+      };
+      let deals = JSON.parse(localStorage.getItem('deals')) || [];
+      deals.push(deal);
+      localStorage.setItem('deals', JSON.stringify(deals));
+      alert('Deal added!');
+      window.location.href = 'admin-deals.html';
+  });
+
+  // Display existing deals
+  function loadExistingDeals() {
+      const deals = JSON.parse(localStorage.getItem('deals')) || [];
+      const container = document.getElementById('existingDealsContainer');
+      if (deals.length === 0) {
+          container.innerHTML = '<p>No active deals found.</p>';
+          return;
+      }
+      container.innerHTML = '';
+      deals.forEach(deal => {
+          container.innerHTML += `
+              <div class="deal-preview">
+                  <span class="ribbon-preview ${deal.ribbon}">${deal.ribbon.toUpperCase()}</span>
+                  <strong>${deal.title}</strong> -
+                  Code: <code>${deal.code}</code>
+              </div>
+          `;
+      });
+  }
+  document.addEventListener('DOMContentLoaded', loadExistingDeals);
+</script>
+</body>
+</html>
