@@ -29,7 +29,7 @@ public class MovieService {
     }
 
     public void saveMovie(Movie movie, MultipartFile imageFile) throws IOException {
-        // Generate unique ID
+        // Generate unique ID by using sysstem.currentMillis()
         movie.setId(String.valueOf(System.currentTimeMillis()));
 
         // Set defaults if not provided

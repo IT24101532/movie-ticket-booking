@@ -16,12 +16,13 @@ public class AdminController {
     private final MovieService movieService;
 
     public AdminController(MovieService movieService) {
+        
         this.movieService = movieService;
     }
 
     @GetMapping
     public String adminDashboard(HttpSession session, Model model) {
-        // Check for admin session attribute (not user role)
+        // Check for admin session attribute  (only for admins can log into this )
         if (session.getAttribute("admin") == null) {
             return "redirect:/login";
         }
@@ -53,7 +54,7 @@ public class AdminController {
         if (session.getAttribute("admin") == null) {
             return "redirect:/login";
         }
-
+// possible error can occur during this
         try {
             Movie movie = new Movie();
             movie.setTitle(title);

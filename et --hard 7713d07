@@ -1,0 +1,18 @@
+0[33mbb24fa3[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: commit (merge): Merge remote-tracking branch 'origin/main'
+[33m5bb2609[m HEAD@{1}: rebase (abort): returning to refs/heads/main
+[33mffb7c71[m HEAD@{2}: rebase (start): checkout origin/main
+[33m5bb2609[m HEAD@{3}: commit: New update 17/05 10AM
+[33m6328bd1[m HEAD@{4}: reset: moving to HEAD
+[33m6328bd1[m HEAD@{5}: commit: New update 17/05 10AM
+[33m3c86fbb[m HEAD@{6}: commit: New update 10/05 11.50 am
+[33m7713d07[m HEAD@{7}: commit: New update 10/05 11.50 am
+[33m61f3f5b[m HEAD@{8}: commit: New update 06/05 at 7.45
+[33m6fcbcde[m HEAD@{9}: commit: Add data files
+[33md751988[m HEAD@{10}: commit: New update 06/05 at 7.45
+[33mb3cd5f1[m HEAD@{11}: commit: new change 7.04 pm
+[33ma2a4bbd[m HEAD@{12}: commit: new change 7.04 pm
+[33m7f151d9[m HEAD@{13}: merge origin/main: Merge made by the 'ort' strategy.
+[33mcc3003f[m HEAD@{14}: commit (amend): Add User login and Registration , some changes in css
+[33m07d2565[m HEAD@{15}: commit: Add User login and Registration , some changes in css
+[33m0553dde[m HEAD@{16}: commit: Add User login and Registration
+[33ma23707e[m HEAD@{17}: clone: from https://github.com/IT24101532/movie-ticket-booking.git
