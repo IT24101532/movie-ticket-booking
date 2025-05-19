@@ -1,0 +1,41 @@
+@startuml
+class MovieController {
+    - movieService: MovieService
+}
+
+class AdminController {
+    - movieService: MovieService
+}
+
+class MovieService {
+    + saveMovie(movie, imageFile)
+    + getAllMovies()
+    + getAllMoviesSortedByReleaseDate(newestFirst)
+    + getMovieById(id)
+    + deleteMovie(movieId)
+}
+
+class Movie {
+    - id: String
+    - title: String
+    - genre: String
+    - language: String
+    - releaseDate: LocalDate
+    - showTime: LocalTime
+    - theater: String
+    - description: String
+    - imagePath: String
+    - price: Double
+    - eventType: String
+    + getters/setters
+}
+
+' Show the file as a resource
+class "movie.txt" <<file>>
+
+MovieController --> MovieService
+AdminController --> MovieService
+MovieService --> Movie
+MovieService ..> "movie.txt" : reads/writes
+
+@enduml
