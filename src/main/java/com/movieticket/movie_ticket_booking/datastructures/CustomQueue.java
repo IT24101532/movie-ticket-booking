@@ -13,7 +13,8 @@ public class CustomQueue<T> {    //T is a type placeholder so we can use any pri
     private int size;
 
     public CustomQueue() {
-        front = rear = null;
+        front  = null;
+        rear = null;
         size = 0;
     }
 
@@ -39,6 +40,10 @@ public class CustomQueue<T> {    //T is a type placeholder so we can use any pri
         return item;
     }
 
-    public synchronized boolean isEmpty() { return size == 0; }
-    public synchronized int size() { return size; }
+    public synchronized boolean isEmpty() {
+        return size == 0;
+    }
+    public synchronized int size() {
+        return size;
+    }
 }
