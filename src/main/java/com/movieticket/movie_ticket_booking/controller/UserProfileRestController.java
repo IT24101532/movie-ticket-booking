@@ -13,7 +13,6 @@ public class UserProfileRestController {
     @Autowired
     private UserService userService;
 
-    // GET /api/user/profile - returns all user details for the logged-in user
     @GetMapping("/profile")
     public User getProfile(HttpSession session) {
         User user = (User) session.getAttribute("user");
@@ -28,7 +27,6 @@ public class UserProfileRestController {
     public User updateProfile(@RequestBody User updatedUser, HttpSession session) {
         User sessionUser = (User) session.getAttribute("user");
         if (sessionUser == null) {
-            // Not logged in, return empty or handle unauthorized
             return new User();
         }
 

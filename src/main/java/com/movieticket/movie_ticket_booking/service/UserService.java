@@ -45,7 +45,6 @@ public class UserService {
         return admin;
     }
 
-    // --- User Management ---
     public User registerUser(User user) throws IOException {
         if (findUserByEmail(user.getEmail()) != null) return null;
         user.setId(UUID.randomUUID().toString());
