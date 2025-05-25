@@ -5,9 +5,28 @@ public class Booking {
     private String userId;
     private String movieId;
     private String theaterId;
-    private String showDateTime; // Always store as string "YYYY-MM-DD HH:mm"
-    private String seatNumbers;  // e.g. "A1,A2"
+    private String showDateTime; // Format: "YYYY-MM-DD HH:mm"
+    private String seatNumbers;  // e.g., "A1,A2"
     private double totalAmount;
+    private boolean confirmed;   // NEW: Track if booking is confirmed (for queue logic)
+
+    // --- Default constructor ---
+    public Booking() {
+        this.confirmed = false;
+    }
+
+    // --- Parameterized constructor (for queue and persistence) ---
+    public Booking(String id, String userId, String movieId, String theaterId,
+                   String showDateTime, String seatNumbers, double totalAmount, boolean confirmed) {
+        this.id = id;
+        this.userId = userId;
+        this.movieId = movieId;
+        this.theaterId = theaterId;
+        this.showDateTime = showDateTime;
+        this.seatNumbers = seatNumbers;
+        this.totalAmount = totalAmount;
+        this.confirmed = confirmed;
+    }
 
     // --- Standard getters and setters ---
 
@@ -32,7 +51,10 @@ public class Booking {
     public double getTotalAmount() { return totalAmount; }
     public void setTotalAmount(double totalAmount) { this.totalAmount = totalAmount; }
 
-    // --- Aliases for compatibility (optional, but not required if you update all usage) ---
+    public boolean isConfirmed() { return confirmed; }
+    public void setConfirmed(boolean confirmed) { this.confirmed = confirmed; }
+
+    // --- Aliases for compatibility (optional) ---
     public String getSeats() { return seatNumbers; }
     public void setSeats(String seats) { this.seatNumbers = seats; }
     public double getTotal() { return totalAmount; }

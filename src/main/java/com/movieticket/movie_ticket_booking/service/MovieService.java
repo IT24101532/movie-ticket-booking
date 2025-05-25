@@ -19,6 +19,8 @@ public class MovieService {
     private final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 
     public MovieService() {
+
+
         // Create directories at startup
         try {
             Files.createDirectories(Paths.get("data"));

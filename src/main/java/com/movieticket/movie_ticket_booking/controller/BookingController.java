@@ -39,6 +39,39 @@ public class BookingController {
         public String status;
     }
 
+    // Endpoint to create a booking (added to queue)
+    @PostMapping("/create")
+    @ResponseBody
+    public ResponseEntity<String> createBooking(
+            @RequestParam String userId,
+            @RequestParam String movieId,
+            @RequestParam String theaterId,
+            @RequestParam String showDateTime,
+            @RequestParam String seats,
+            @RequestParam double totalAmount
+    ) {
+        try {
+            if (userId.isEmpty() || movieId.isEmpty() || theaterId.isEmpty() || showDateTime.isEmpty() || seats.isEmpty()) {
+                return ResponseEntity.badRequest().body("Missing required booking fields");
+            }
+            Booking booking = new Booking();
+            booking.setId(UUID.randomUUID().toString());
+            booking.setUserId(userId);
+            booking.setMovieId(movieId);
+            booking.setTheaterId(theaterId);
+            booking.setShowDateTime(showDateTime);
+            booking.setSeatNumbers(seats);
+            booking.setTotalAmount(totalAmount);
+            booking.setConfirmed(false);
+
+            bookingService.queueBooking(booking);
+
+            return ResponseEntity.accepted().body("Booking queued. ID: " + booking.getId());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error creating booking: " + e.getMessage());
+        }
+    }
+
     @GetMapping
     @ResponseBody
     public ResponseEntity<List<BookingHistoryDTO>> getUserBookings(HttpSession session) {
@@ -117,6 +150,7 @@ public class BookingController {
             return ResponseEntity.status(500).build();
         }
     }
+
     @GetMapping("/admin/all")
     @ResponseBody
     public ResponseEntity<List<BookingHistoryDTO>> getAllBookingsForAdmin(HttpSession session) {
@@ -149,6 +183,4 @@ public class BookingController {
             return ResponseEntity.status(500).build();
         }
     }
-
-
 }

@@ -1,6 +1,7 @@
 package com.movieticket.movie_ticket_booking.controller;
 
 import com.movieticket.movie_ticket_booking.model.Movie;
+import com.movieticket.movie_ticket_booking.service.BookingService;
 import com.movieticket.movie_ticket_booking.service.MovieService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -14,15 +15,16 @@ import java.time.LocalTime;
 @RequestMapping("/admin")
 public class AdminController {
     private final MovieService movieService;
+    private final BookingService bookingService; // NEW: Added BookingService dependency
 
-    public AdminController(MovieService movieService) {
-        
+    // Updated constructor to include BookingService
+    public AdminController(MovieService movieService, BookingService bookingService) {
         this.movieService = movieService;
+        this.bookingService = bookingService;
     }
 
     @GetMapping
     public String adminDashboard(HttpSession session, Model model) {
-        // Check for admin session attribute  (only for admins can log into this )
         if (session.getAttribute("admin") == null) {
             return "redirect:/login";
         }
@@ -34,6 +36,22 @@ public class AdminController {
             model.addAttribute("error", "Error loading movies: " + e.getMessage());
         }
         return "admin-dashboard";
+    }
+
+    // NEW: Endpoint to process next booking in queue
+    @PostMapping("/process-next-booking")
+    public String processNextBooking(HttpSession session) {
+        if (session.getAttribute("admin") == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            bookingService.processNextInQueue();
+        } catch (Exception e) {
+            // Handle error (you could add to model if needed)
+            System.err.println("Error processing next booking: " + e.getMessage());
+        }
+        return "redirect:/admin";
     }
 
     @PostMapping("/add-movie")
@@ -50,11 +68,10 @@ public class AdminController {
             HttpSession session,
             Model model) {
 
-        // Check for admin session attribute
         if (session.getAttribute("admin") == null) {
             return "redirect:/login";
         }
-// possible error can occur during this
+
         try {
             Movie movie = new Movie();
             movie.setTitle(title);
@@ -81,7 +98,6 @@ public class AdminController {
             HttpSession session,
             Model model) {
 
-        // Check for admin session attribute
         if (session.getAttribute("admin") == null) {
             return "redirect:/login";
         }

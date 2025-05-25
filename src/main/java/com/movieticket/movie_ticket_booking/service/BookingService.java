@@ -1,6 +1,7 @@
 package com.movieticket.movie_ticket_booking.service;
 
 import com.movieticket.movie_ticket_booking.model.Booking;
+import com.movieticket.movie_ticket_booking.datastructures.CustomQueue;
 import org.springframework.stereotype.Service;
 import java.io.*;
 import java.nio.file.*;
@@ -14,9 +15,8 @@ public class BookingService {
     private static final String DATA_DIR = "data";
     private static final DateTimeFormatter SHOWTIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-    // Simple queue using a synchronized list
-    private final List<Booking> bookingQueue = Collections.synchronizedList(new ArrayList<>());
-    private final Object queueLock = new Object();
+    // Use custom queue instead of Java Collections
+    private final CustomQueue<Booking> bookingQueue = new CustomQueue<>();
 
     public BookingService() {
         try {
@@ -30,10 +30,8 @@ public class BookingService {
         Thread processor = new Thread(() -> {
             while (true) {
                 Booking nextBooking = null;
-                synchronized (queueLock) {
-                    if (!bookingQueue.isEmpty()) {
-                        nextBooking = bookingQueue.remove(0);
-                    }
+                if (!bookingQueue.isEmpty()) {
+                    nextBooking = bookingQueue.dequeue();
                 }
                 if (nextBooking != null) {
                     try {
@@ -56,9 +54,7 @@ public class BookingService {
 
     // Call this method from your controller to add a booking request to the queue
     public void queueBooking(Booking booking) {
-        synchronized (queueLock) {
-            bookingQueue.add(booking);
-        }
+        bookingQueue.enqueue(booking);
         System.out.println("Booking added to queue: " + booking.getId());
     }
 
@@ -89,8 +85,17 @@ public class BookingService {
         return booking;
     }
 
-    // (Keep all your other methods unchanged below)
-    // ...
+    // NEW: Manually process the next booking in the queue (for AdminController)
+    public void processNextInQueue() {
+        if (!bookingQueue.isEmpty()) {
+            try {
+                Booking nextBooking = bookingQueue.dequeue();
+                processBookingDirect(nextBooking);
+            } catch (IOException e) {
+                System.err.println("Failed to process next booking: " + e.getMessage());
+            }
+        }
+    }
 
     public List<String> getOccupiedSeats(String movieId, String theaterId, String showtime) throws IOException {
         List<String> occupied = new ArrayList<>();
