@@ -118,7 +118,7 @@ public class MovieService {
         return movies;
     }
 
-    // Insertion Sort for movies by release date (ascending)
+    // Implementation of insertion sort (can sort movies by release date)
     public List<Movie> getAllMoviesSortedByReleaseDate(boolean newestFirst) {
         List<Movie> movies = getAllMovies();
         // Insertion sort by releaseDate
