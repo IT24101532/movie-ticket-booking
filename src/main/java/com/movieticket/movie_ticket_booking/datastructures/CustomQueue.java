@@ -40,6 +40,8 @@ public class CustomQueue<T> {    //T is a type placeholder so we can use any pri
         return item;
     }
 
+    // we didnnt add any isFullmethod because as this dynamically growing , there is no need of it
+
     public synchronized boolean isEmpty() {
         return size == 0;
     }
